@@ -6,29 +6,9 @@
  * @flow
  */
 
-import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
 import { createStackNavigator, createAppContainer, createDrawerNavigator } from "react-navigation";
-import Drawer from './src/components/drawer'
-import { styles } from './src/styles/styles'
-
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
-
-type Props = {};
-class HomeScreen extends Component<Props> {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Welcome to React Native!</Text>
-      </View>
-    );
-  }
-}
+import Drawer from './src/components/drawer';
+import HomeScreen from './src/screens/homeScreen';
 
 //Drawer config
 const DrawerStack = createDrawerNavigator({
@@ -49,6 +29,7 @@ const DrawerStack = createDrawerNavigator({
     drawerToggleRoute: 'DrawerToggle'
   });
 
+//Navigator config
 const AppNavigator = createStackNavigator({
   Home: {
     screen: DrawerStack,
@@ -59,23 +40,3 @@ const AppNavigator = createStackNavigator({
 });
 
 export default createAppContainer(AppNavigator);
-
-
-/* const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-}); */
