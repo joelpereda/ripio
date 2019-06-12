@@ -10,6 +10,8 @@ import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { createStackNavigator, createAppContainer, createDrawerNavigator } from "react-navigation";
 import Drawer from './src/components/drawer'
+import { styles } from './src/styles/styles'
+
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -22,9 +24,7 @@ class HomeScreen extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
+        <Text style={styles.title}>Welcome to React Native!</Text>
       </View>
     );
   }
@@ -61,7 +61,7 @@ const AppNavigator = createStackNavigator({
 export default createAppContainer(AppNavigator);
 
 
-const styles = StyleSheet.create({
+/* const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -78,4 +78,4 @@ const styles = StyleSheet.create({
     color: '#333333',
     marginBottom: 5,
   },
-});
+}); */
