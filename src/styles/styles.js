@@ -8,7 +8,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15
     },
     rowContainer: {
-        flex: 0.1,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -24,10 +23,10 @@ const styles = StyleSheet.create({
 
     //HOME STYLES
     balanceContainer: {
-        flex: 1
+        flex: 0.1
     },
     balanceTextTitle: {
-        fontFamily: 'ProductSans-Bold',
+        fontFamily: 'ProductSans-Black',
         fontSize: 16,
         color: '#000'
     },
@@ -36,6 +35,9 @@ const styles = StyleSheet.create({
         fontSize: 22,
         color: '#000'
 
+    },
+    tabContainer: {
+        height: '75%',
     }
 })
 

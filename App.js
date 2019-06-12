@@ -26,7 +26,8 @@ const DrawerStack = createDrawerNavigator({
     drawerPosition: 'left',
     drawerOpenRoute: 'DrawerOpen',
     drawerCloseRoute: 'DrawerClose',
-    drawerToggleRoute: 'DrawerToggle'
+    drawerToggleRoute: 'DrawerToggle',
+    drawerBackgroundColor: 'transparent'
   });
 
 //Navigator config
