@@ -5,10 +5,15 @@
  * @format
  * @flow
  */
-
+import React, { Component } from 'react';
 import { createStackNavigator, createAppContainer, createDrawerNavigator } from "react-navigation";
 import Drawer from './src/components/drawer';
-import HomeScreen from './src/screens/homeScreen';
+import { HomeScreen } from './src/screens/homeScreen';
+import { Provider } from 'react-redux';
+import { store } from './src/helpers/store'
+
+
+
 
 //Drawer config
 const DrawerStack = createDrawerNavigator({
@@ -31,7 +36,7 @@ const DrawerStack = createDrawerNavigator({
   });
 
 //Navigator config
-const AppNavigator = createStackNavigator({
+let RootStack = createStackNavigator({
   Home: {
     screen: DrawerStack,
     navigationOptions: {
@@ -40,4 +45,16 @@ const AppNavigator = createStackNavigator({
   }
 });
 
-export default createAppContainer(AppNavigator);
+
+let Navigation = createAppContainer(RootStack);
+
+// Render the app container component with the provider around it
+export default class App extends React.Component {
+  render() {
+    return (
+      <Provider store={store}>
+        <Navigation />
+      </Provider>
+    );
+  }
+}

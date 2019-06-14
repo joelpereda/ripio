@@ -9,45 +9,21 @@ class TabOverview extends Component {
         return (
             <View style={{ flex: 1 }}>
                 <Text style={[styles.title, { marginTop: 10 }]}>Wallets</Text>
-                <ScrollView horizontal={true}>
-                    <Card style={{ height: 100, width: 250, borderRadius: 12 }}>
-                        <CardItem style={{ borderRadius: 12 }}>
-                            <Body>
-                                <Text>
-                                //Your text here
-                                </Text>
-                            </Body>
-                        </CardItem>
-                    </Card>
-                    <Card style={{ height: 100, width: 250, borderRadius: 12 }}>
-                        <CardItem style={{ borderRadius: 12 }}>
-                            <Body>
-                                <Text>
-                                //Your text here
-                                </Text>
-                            </Body>
-                        </CardItem>
-                    </Card>
-                    <Card style={{ height: 100, width: 250, borderRadius: 12 }}>
-                        <CardItem style={{ borderRadius: 12 }}>
-                            <Body>
-                                <Text>
-                                //Your text here
-                                </Text>
-                            </Body>
-                        </CardItem>
-                    </Card>
-                    <Card style={{ height: 100, width: 250, borderRadius: 12 }}>
-                        <CardItem style={{ borderRadius: 12 }}>
-                            <Body>
-                                <Text>
-                                //Your text here
-                                </Text>
-                            </Body>
-                        </CardItem>
-                    </Card>
 
-                </ScrollView>
+                <Card style={styles.card}>
+                    <CardItem style={{ borderRadius: 12, flexDirection: 'row', justifyContent: 'space-between' }} header={true}>
+                        <Text style={styles.cardTitle}>Bitcoin</Text>
+                        <Text style={styles.cardPrice}>{this.props.btcPrice}</Text>
+                    </CardItem>
+                    <CardItem style={{ borderRadius: 12 }}>
+                        <Body>
+                            <Text>
+                            //Your text here
+                            </Text>
+                        </Body>
+                    </CardItem>
+                </Card>
+
             </View>
         );
     }
