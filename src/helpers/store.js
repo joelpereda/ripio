@@ -1,11 +1,16 @@
 import { createStore, combineReducers, applyMiddleware } from "redux";
-import thunkMiddleware from 'redux-thunk';
+import thunkMiddleware from "redux-thunk";
 import price from "../reducers/index";
 
 const rootReducer = combineReducers({
-    price,
+  price
 });
 
-const debug = window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__();
+const debug =
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__();
 
-export const store = createStore(rootReducer, debug, applyMiddleware(thunkMiddleware));
+export const store = createStore(
+  rootReducer,
+  debug,
+  applyMiddleware(thunkMiddleware)
+);
