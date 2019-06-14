@@ -9,27 +9,31 @@ import { getPrices, loading } from "../actions/price.actions";
 import { withNavigation } from "react-navigation";
 import Footer from "../components/footer";
 import Modal from "react-native-modal";
-import {
-  LineChart,
-  BarChart,
-  PieChart,
-  ProgressChart,
-  ContributionGraph,
-  StackedBarChart
-} from "react-native-chart-kit";
+import { LineChart } from "react-native-chart-kit";
+
 class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isModalVisible: false,
       activity: true,
-      chart: false
+      chart: false,
+      btcBuy: "-",
+      btcSell: "-",
+      variation: "-"
     };
   }
 
   componentDidMount() {
     this.props.onLoadPrices(true);
-    this.props.getPrices();
+    this.props.getPrices().then(prices => {
+      console.log("prices :", prices);
+      this.setState({
+        btcBuy: prices.data.rates.ARS_BUY,
+        btcSell: prices.data.rates.ARS_SELL,
+        variation: prices.data.variation.ARS
+      });
+    });
   }
 
   showModalCard() {
@@ -38,11 +42,13 @@ class HomeScreen extends Component {
     });
     console.log("asdsad");
   }
+
   hideModalCard() {
     this.setState({
       isModalVisible: false
     });
   }
+
   handleActivityModal() {
     if (!this.state.activity) {
       this.setState({ activity: true, chart: false });
@@ -56,13 +62,10 @@ class HomeScreen extends Component {
   }
 
   render() {
-    console.log("this.state.activity :", this.state.activity);
-    console.log("this.state.chart :", this.state.chart);
-
     let { price } = this.props;
-    if (!price.price.isLoading) {
-      console.log("price :", price.price.data.rates.ARS_BUY);
-    }
+    let btcSell = this.state.btcSell;
+    let variation = this.state.variation;
+    let btcBuy = this.state.btcBuy;
     return (
       <View style={styles.container}>
         <View style={styles.rowContainer}>
@@ -117,11 +120,16 @@ class HomeScreen extends Component {
             }
           >
             <TabOverview
-              btcPrice={
-                price.price.isLoading
-                  ? "-"
-                  : `${price.price.data.rates.ARS_BUY} ARS`
+              press={() => this.showModalCard()}
+              variation={variation}
+              styleVariation={
+                variation <= 0 ? styles.variationRed : styles.variationBlue
               }
+              iconName="md-arrow-dropup"
+              iconType="Ionicons"
+              cardText="Card text"
+              btcBuy={price.price.isLoading ? "-" : `${btcBuy}`}
+              btcSell={price.price.isLoading ? "-" : `${btcSell}`}
             />
           </Tab>
           <Tab
@@ -211,7 +219,11 @@ class HomeScreen extends Component {
                 </TouchableOpacity>
               </View>
               {this.state.activity ? (
-                <View style={styles.activityViewModal} />
+                <View style={styles.activityViewModal}>
+                  <Text style={styles.activityViewModalText}>
+                    No hay operaciones realizadas :(
+                  </Text>
+                </View>
               ) : (
                 <View style={styles.chartViewModal}>
                   <Text style={styles.subtitleChart}>
@@ -243,14 +255,14 @@ class HomeScreen extends Component {
                         }
                       ]
                     }}
-                    width={Dimensions.get("window").width} // from react-native
+                    width={Dimensions.get("window").width}
                     height={300}
                     yAxisLabel={"$"}
                     chartConfig={{
                       backgroundColor: "#e26a00",
                       backgroundGradientFrom: "#ff9951",
                       backgroundGradientTo: "#ff6a00",
-                      decimalPlaces: 0, // optional, defaults to 2dp
+                      decimalPlaces: 0,
                       color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                       style: {
                         borderRadius: 20

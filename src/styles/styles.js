@@ -44,22 +44,65 @@ const styles = StyleSheet.create({
 
   //CARDS
   card: {
-    height: 100,
     width: "98%",
     borderRadius: 8,
     alignSelf: "center"
   },
-  cardTitle: {
+  cardTitleBtc: {
     fontFamily: "ProductSans-Regular",
     color: "#000",
+    fontSize: 18
+  },
+  cardTitle: {
+    fontFamily: "ProductSans-Light",
+    color: "#000",
+    fontSize: 17
+  },
+  cardSubtitle: {
+    fontFamily: "ProductSans-Thin",
+    color: "#000",
+    fontSize: 13
+  },
+  cardPriceBuy: {
+    fontFamily: "ProductSans-Medium",
+    color: "#000",
+    fontSize: 17
+  },
+  cardPriceSell: {
+    fontFamily: "ProductSans-Medium",
+    color: "#0187d0",
     fontSize: 17
   },
   cardPrice: {
     fontFamily: "ProductSans-Regular",
     color: "#000",
-    fontSize: 14
+    fontSize: 17
   },
-
+  cardText: {
+    fontFamily: "ProductSans-Regular",
+    fontSize: 17,
+    color: "#fff"
+  },
+  variationRed: {
+    backgroundColor: "#a01616",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "flex-end",
+    borderRadius: 4,
+    padding: 4,
+    paddingHorizontal: 10
+  },
+  variationBlue: {
+    backgroundColor: "#0187d0",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "flex-end",
+    borderRadius: 4,
+    padding: 4,
+    paddingHorizontal: 10
+  },
   //FOOTER
   footer: {
     flexDirection: "row",
@@ -163,8 +206,15 @@ const styles = StyleSheet.create({
 
   //activityViewModal
   activityViewModal: {
-    backgroundColor: "pink",
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
     flex: 1
+  },
+  activityViewModalText: {
+    fontFamily: "ProductSans-Regular",
+    color: "#000",
+    fontSize: 18
   },
   chartViewModal: {
     backgroundColor: "white",
