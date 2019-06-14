@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, View, TouchableOpacity, Image } from "react-native";
+import { Text, View, TouchableWithoutFeedback, Image } from "react-native";
 import { Card, CardItem, Body, Icon } from "native-base";
 import { styles } from "../styles/styles";
 
@@ -12,13 +12,13 @@ class TabOverview extends Component {
     return (
       <View style={{ flex: 1 }}>
         <Text style={[styles.title, { marginTop: 10 }]}>Criptomonedas</Text>
-        <TouchableOpacity onPress={() => this.press(press)}>
+        <TouchableWithoutFeedback onPress={() => this.press(press)}>
           <Card style={styles.card}>
             <CardItem
               style={{
                 borderRadius: 12,
                 flexDirection: "row",
-                justifyContent: "space-between"
+                justifyContent: "space-around"
               }}
               header={true}
             >
@@ -44,7 +44,10 @@ class TabOverview extends Component {
               </View>
             </CardItem>
             <CardItem style={{ borderRadius: 12 }}>
-              <Body>
+              <Body style={styles.variationBody}>
+                <Text style={styles.variationText}>
+                  {this.props.variationText}
+                </Text>
                 <View style={this.props.styleVariation}>
                   <Text style={styles.cardText}>{this.props.variation}</Text>
                   <Icon
@@ -60,7 +63,7 @@ class TabOverview extends Component {
               </Body>
             </CardItem>
           </Card>
-        </TouchableOpacity>
+        </TouchableWithoutFeedback>
       </View>
     );
   }

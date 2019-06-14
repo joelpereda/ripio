@@ -1,22 +1,40 @@
 import React, { Component } from "react";
-import { Text, View, TouchableOpacity } from "react-native";
-import { Icon, Tabs, Tab } from "native-base";
+import { View, TouchableOpacity } from "react-native";
 import { styles } from "../styles/styles";
 import Button from "../components/button";
 class Footer extends Component {
-  press(press) {
-    press();
+  pressReceive(pressReceive) {
+    pressReceive();
   }
-
+  pressSend(pressSend) {
+    pressSend();
+  }
   render() {
-    const { press } = this.props;
+    const { pressReceive, pressSend } = this.props;
     return (
       <View style={styles.footer}>
-        <TouchableOpacity onPress={() => this.press(press)}>
+        <TouchableOpacity onPress={() => this.pressReceive(pressReceive)}>
           <Button
-            iconName="ios-trending-up"
+            iconName="ios-arrow-dropup"
             iconType="Ionicons"
-            iconText="Enviar btc"
+            buttonText="Enviar btc"
+            buttonStyle={{
+              fontSize: 17,
+              fontFamily: "ProductSans-Regular",
+              color: "#a01616"
+            }}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => this.pressSend(pressSend)}>
+          <Button
+            iconName="ios-arrow-dropdown"
+            iconType="Ionicons"
+            buttonText="Recibir btc"
+            buttonStyle={{
+              fontSize: 17,
+              fontFamily: "ProductSans-Regular",
+              color: "#0187d0"
+            }}
           />
         </TouchableOpacity>
       </View>

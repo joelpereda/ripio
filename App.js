@@ -11,6 +11,7 @@ import {
   createAppContainer,
   createDrawerNavigator
 } from "react-navigation";
+import { Root } from "native-base";
 import Drawer from "./src/components/drawer";
 import { HomeScreen } from "./src/screens/homeScreen";
 import { Provider } from "react-redux";
@@ -53,9 +54,11 @@ let Navigation = createAppContainer(RootStack);
 export default class App extends React.Component {
   render() {
     return (
-      <Provider store={store}>
-        <Navigation />
-      </Provider>
+      <Root>
+        <Provider store={store}>
+          <Navigation />
+        </Provider>
+      </Root>
     );
   }
 }

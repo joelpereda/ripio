@@ -1,26 +1,49 @@
 import React, { Component } from "react";
-import { Text, View, TouchableOpacity, Dimensions } from "react-native";
-import { Icon, Tabs, Tab, TabHeading } from "native-base";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  Dimensions,
+  Linking,
+  Image,
+  Clipboard
+} from "react-native";
+import {
+  Icon,
+  Tabs,
+  Tab,
+  TabHeading,
+  Toast,
+  Form,
+  Item,
+  Input
+} from "native-base";
 import { styles } from "../styles/styles";
-import TabOverview from "../components/tabOverview";
-import TabActivity from "../components/tabActivity";
 import { connect } from "react-redux";
 import { getPrices, loading } from "../actions/price.actions";
 import { withNavigation } from "react-navigation";
+import { LineChart } from "react-native-chart-kit";
+import TabOverview from "../components/tabOverview";
+import TabActivity from "../components/tabActivity";
 import Footer from "../components/footer";
 import Modal from "react-native-modal";
-import { LineChart } from "react-native-chart-kit";
-
+import coinAddressValidator from "coin-address-validator";
+import { ScrollView } from "react-native-gesture-handler";
 class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isModalVisible: false,
+      modalSendBtc: false,
+      modalReceiveBtc: false,
+      modalConfirm: false,
       activity: true,
       chart: false,
+      bitcoin: Number(0),
       btcBuy: "-",
       btcSell: "-",
-      variation: "-"
+      variation: "-",
+      clipboard: ""
     };
   }
 
@@ -31,7 +54,7 @@ class HomeScreen extends Component {
       this.setState({
         btcBuy: prices.data.rates.ARS_BUY,
         btcSell: prices.data.rates.ARS_SELL,
-        variation: prices.data.variation.ARS
+        variation: prices.data.variation.ARS.toString()
       });
     });
   }
@@ -49,6 +72,77 @@ class HomeScreen extends Component {
     });
   }
 
+  showModalSendBtc() {
+    this.setState({
+      modalSendBtc: true
+    });
+  }
+
+  hideModalSendBtc() {
+    this.setState({
+      modalSendBtc: false
+    });
+  }
+
+  showModalReceiveBtc() {
+    this.setState({
+      modalReceiveBtc: true
+    });
+  }
+
+  hideModalReceiveBtc() {
+    this.setState({
+      modalReceiveBtc: false
+    });
+  }
+
+  showModalConfirm() {
+    this.setState({
+      modalConfirm: true
+    });
+  }
+
+  hideModalConfirm() {
+    this.setState({
+      modalConfirm: false
+    });
+  }
+
+  sendBitcoin() {
+    const isBtcAddress = coinAddressValidator.validate(
+      this.state.clipboard,
+      "btc",
+      "prod"
+    );
+    if (isBtcAddress) {
+      if (this.state.clipboard != "" && this.state.bitcoin != 0) {
+        this.showModalConfirm();
+      } else {
+        Toast.show({
+          text: "Debe completar ambos campos para continuar.",
+          buttonText: "X",
+          position: "top",
+          type: "danger",
+          textStyle: { fontFamily: "ProductSans-Regular" },
+          duration: 3000
+        });
+      }
+    } else {
+      Toast.show({
+        text: "Introduzca una dirección correcta.",
+        buttonText: "X",
+        position: "top",
+        type: "danger",
+        textStyle: { fontFamily: "ProductSans-Regular" },
+        duration: 3000
+      });
+    }
+  }
+
+  aceptSend() {
+    console.log("asdasdsadasdas");
+  }
+
   handleActivityModal() {
     if (!this.state.activity) {
       this.setState({ activity: true, chart: false });
@@ -61,15 +155,56 @@ class HomeScreen extends Component {
     }
   }
 
+  copyToClipboard(value) {
+    Clipboard.setString(value);
+    Toast.show({
+      text: "Copiado al portapapeles",
+      buttonText: "X",
+      position: "top",
+      textStyle: { fontFamily: "ProductSans-Regular" },
+      duration: 2000
+    });
+  }
+  async getClipboard() {
+    var content = await Clipboard.getString();
+    this.setState({
+      clipboard: content
+    });
+  }
+
+  changeInputBitcoin(value) {
+    this.setState({
+      bitcoin: value
+    });
+  }
+
+  changeInput(value) {
+    this.setState({
+      clipboard: value
+    });
+  }
+
   render() {
     let { price } = this.props;
     let btcSell = this.state.btcSell;
-    let variation = this.state.variation;
     let btcBuy = this.state.btcBuy;
+    let variation = this.state.variation.substr(0, 6);
+    let balanceArs = 38510.77;
+    let balanceBtc = balanceArs / btcSell;
+    balanceBtc = balanceBtc.toString().substr(0, 14);
     return (
       <View style={styles.container}>
         <View style={styles.rowContainer}>
-          <Text style={styles.title}>ripio.</Text>
+          <TouchableOpacity
+            onPress={() => Linking.openURL("https://ripio.com/es/")}
+          >
+            {/* <Text style={styles.title}>ripio.</Text> */}
+            <Image
+              source={require("../../assets/ripio-dark.png")}
+              style={{ width: 50, height: 50 }}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => this.props.navigation.openDrawer()}>
             <Icon
               name="menu"
@@ -80,95 +215,105 @@ class HomeScreen extends Component {
         </View>
         <View style={styles.balanceContainer}>
           <Text style={styles.balanceTextTitle}>MI BALANCE</Text>
-          <Text style={styles.balanceTextValue}>0.00 ARS</Text>
+          <Text style={styles.balanceTextValue}>AR$ {balanceArs}</Text>
+          <Text style={styles.balanceBtcText}>BTC {balanceBtc}</Text>
         </View>
-        <Tabs
-          style={styles.tabContainer}
-          tabBarPosition="top"
-          tabBarUnderlineStyle={{
-            backgroundColor: "#0187d0"
-          }}
-        >
-          <Tab
-            activeTextStyle={{
-              color: "black",
-              fontFamily: "ProductSans-Bold"
+        <ScrollView>
+          <Tabs
+            style={styles.tabContainer}
+            tabBarPosition="top"
+            tabBarUnderlineStyle={{
+              backgroundColor: "#0187d0"
             }}
-            activeTabStyle={{
-              backgroundColor: "transparent",
-              shadowColor: "transparent",
-              shadowOpacity: 0
-            }}
-            tabStyle={{
-              backgroundColor: "transparent",
-              shadowColor: "transparent",
-              shadowOpacity: 0
-            }}
-            textStyle={{ fontFamily: "ProductSans-Bold" }}
-            heading={
-              <TabHeading style={{ backgroundColor: "white" }}>
-                <Text
-                  style={{
-                    fontFamily: "ProductSans-Bold",
-                    fontSize: 17,
-                    color: "#000"
-                  }}
-                >
-                  Resumen
-                </Text>
-              </TabHeading>
-            }
           >
-            <TabOverview
-              press={() => this.showModalCard()}
-              variation={variation}
-              styleVariation={
-                variation <= 0 ? styles.variationRed : styles.variationBlue
+            <Tab
+              activeTextStyle={{
+                color: "black",
+                fontFamily: "ProductSans-Bold"
+              }}
+              activeTabStyle={{
+                backgroundColor: "transparent",
+                shadowColor: "transparent",
+                shadowOpacity: 0
+              }}
+              tabStyle={{
+                backgroundColor: "transparent",
+                shadowColor: "transparent",
+                shadowOpacity: 0
+              }}
+              textStyle={{ fontFamily: "ProductSans-Bold" }}
+              heading={
+                <TabHeading style={{ backgroundColor: "white" }}>
+                  <Text
+                    style={{
+                      fontFamily: "ProductSans-Bold",
+                      fontSize: 17,
+                      color: "#000"
+                    }}
+                  >
+                    Resumen
+                  </Text>
+                </TabHeading>
               }
-              iconName="md-arrow-dropup"
-              iconType="Ionicons"
-              cardText="Card text"
-              btcBuy={price.price.isLoading ? "-" : `${btcBuy}`}
-              btcSell={price.price.isLoading ? "-" : `${btcSell}`}
-            />
-          </Tab>
-          <Tab
-            activeTextStyle={{
-              color: "black",
-              fontFamily: "ProductSans-Bold"
-            }}
-            activeTabStyle={{
-              backgroundColor: "#fff",
-              shadowColor: "transparent",
-              shadowOpacity: 0
-            }}
-            tabStyle={{
-              backgroundColor: "#fff",
-              shadowColor: "transparent",
-              shadowOpacity: 0,
-              elevation: 0
-            }}
-            textStyle={{
-              fontFamily: "ProductSans-Bold"
-            }}
-            heading={
-              <TabHeading style={{ backgroundColor: "white" }}>
-                <Text
-                  style={{
-                    fontFamily: "ProductSans-Bold",
-                    fontSize: 17,
-                    color: "#000"
-                  }}
-                >
-                  Actividad
-                </Text>
-              </TabHeading>
-            }
-          >
-            <TabActivity />
-          </Tab>
-        </Tabs>
-        <Footer press={() => this.showModalCard()} />
+            >
+              <TabOverview
+                variationText="Variación"
+                press={() => this.showModalCard()}
+                variation={`${variation}`}
+                styleVariation={
+                  variation <= 0 ? styles.variationRed : styles.variationBlue
+                }
+                iconName={
+                  variation <= 0 ? "md-arrow-dropdown" : "md-arrow-dropup"
+                }
+                iconType="Ionicons"
+                cardText="Card text"
+                btcBuy={price.price.isLoading ? "-" : `${btcBuy}`}
+                btcSell={price.price.isLoading ? "-" : `${btcSell}`}
+              />
+            </Tab>
+            <Tab
+              activeTextStyle={{
+                color: "black",
+                fontFamily: "ProductSans-Bold"
+              }}
+              activeTabStyle={{
+                backgroundColor: "#fff",
+                shadowColor: "transparent",
+                shadowOpacity: 0
+              }}
+              tabStyle={{
+                backgroundColor: "#fff",
+                shadowColor: "transparent",
+                shadowOpacity: 0,
+                elevation: 0
+              }}
+              textStyle={{
+                fontFamily: "ProductSans-Bold"
+              }}
+              heading={
+                <TabHeading style={{ backgroundColor: "white" }}>
+                  <Text
+                    style={{
+                      fontFamily: "ProductSans-Bold",
+                      fontSize: 17,
+                      color: "#000"
+                    }}
+                  >
+                    Actividad
+                  </Text>
+                </TabHeading>
+              }
+            >
+              <TabActivity />
+            </Tab>
+          </Tabs>
+        </ScrollView>
+        <Footer
+          pressReceive={() => this.showModalSendBtc()}
+          pressSend={() => this.showModalReceiveBtc()}
+        />
+        {/* MODAL CUANDO APRETAS EL CARD */}
         <Modal
           style={styles.modal}
           swipeDirection="down"
@@ -190,8 +335,9 @@ class HomeScreen extends Component {
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>BILLETERA BITCOIN</Text>
-              <Text style={styles.modalBalance}>0 BTC</Text>
+              <Text style={styles.modalTitle}>BITCOIN</Text>
+              <Text style={styles.modalBalanceBtc}>{balanceBtc} BTC</Text>
+              <Text style={styles.modalBalanceArs}>AR$ {balanceArs}</Text>
             </View>
             <View style={styles.modalActivity}>
               <View style={styles.modalRow}>
@@ -227,10 +373,7 @@ class HomeScreen extends Component {
               ) : (
                 <View style={styles.chartViewModal}>
                   <Text style={styles.subtitleChart}>
-                    1 BTC ={" "}
-                    {price.price.isLoading
-                      ? "-"
-                      : `${price.price.data.rates.USD_BUY} USD`}
+                    1 BTC = {price.price.isLoading ? "-" : `${btcSell} ARS`}
                   </Text>
                   <LineChart
                     data={{
@@ -245,12 +388,12 @@ class HomeScreen extends Component {
                       datasets: [
                         {
                           data: [
-                            1263,
-                            1571,
-                            3543,
-                            2327,
-                            3824,
-                            price.price.data.rates.USD_BUY
+                            128848,
+                            151706,
+                            177448,
+                            232382,
+                            299465,
+                            btcBuy.toString().substr(0, 6)
                           ]
                         }
                       ]
@@ -275,6 +418,194 @@ class HomeScreen extends Component {
                   />
                 </View>
               )}
+            </View>
+          </View>
+        </Modal>
+
+        {/* MODAL CUANDO APRETAS ENVIAR BTC */}
+        <Modal
+          style={styles.modal}
+          swipeDirection="down"
+          isVisible={this.state.modalSendBtc}
+          onBackButtonPress={() => {
+            this.hideModalSendBtc();
+          }}
+          onBackdropPress={() => {
+            this.hideModalSendBtc();
+          }}
+          onSwipeComplete={() => {
+            this.hideModalSendBtc();
+          }}
+          animationInTiming={1000}
+          animationOutTiming={1000}
+          animationIn="slideInUp"
+          animationOut="slideOutDown"
+          backdropOpacity={0}
+        >
+          <View style={styles.modalContainerSend}>
+            <Text style={styles.modalTitleSend}>ENVIAR BTC</Text>
+            <View style={styles.modalSendSaldo}>
+              <View style={styles.modalHeaderSend}>
+                <Text style={styles.saldoDisponible}>SALDO BTC</Text>
+                <Text style={styles.cardText}>{balanceBtc}</Text>
+              </View>
+              <View style={styles.modalHeaderSend}>
+                <Text style={styles.saldoDisponible}>SALDO AR$</Text>
+                <Text style={styles.cardText}>{balanceArs}</Text>
+              </View>
+            </View>
+            <View style={styles.inputCard}>
+              <Form style={{ width: "100%" }}>
+                <Item
+                  style={{
+                    borderWidth: 0,
+                    borderColor: "rgba(255,255,255,0.0)"
+                  }}
+                  stackedLabel
+                >
+                  <Input
+                    style={{
+                      fontFamily: "ProductSans-Regular",
+                      borderWidth: 0
+                    }}
+                    placeholderStyle={{ fontFamily: "ProductSans-Regular" }}
+                    placeholder="Introduzca el monto"
+                    value={this.state.bitcoin}
+                    onChangeText={value => this.changeInputBitcoin(value)}
+                    keyboardType="numeric"
+                    returnKeyType="next"
+                    onSubmitEditing={() => {
+                      this.refs["bitcoinAddress"]._root.focus();
+                    }}
+                  />
+                </Item>
+                <Item
+                  style={{
+                    borderWidth: 0,
+                    borderColor: "rgba(255,255,255,0.0)"
+                  }}
+                  stackedLabel
+                >
+                  <Input
+                    ref="bitcoinAddress"
+                    style={{
+                      fontFamily: "ProductSans-Regular",
+                      borderWidth: 0
+                    }}
+                    placeholderStyle={{ fontFamily: "ProductSans-Regular" }}
+                    placeholder="Introduzca la dirección de BTC"
+                    value={this.state.clipboard}
+                    onChangeText={value => this.changeInput(value)}
+                  />
+                </Item>
+              </Form>
+              <TouchableOpacity onPress={() => this.getClipboard()}>
+                <Text style={styles.sendClipboardText}>
+                  Pegar dirección desde el portapapeles
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+              style={styles.buttonSend}
+              onPress={() => {
+                this.sendBitcoin();
+              }}
+            >
+              <Text style={styles.buttonSendText}>Enviar</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+
+        {/* MODAL CUANDO APRETAS ENVIAR BTC */}
+        <Modal
+          style={styles.modal}
+          swipeDirection="down"
+          isVisible={this.state.modalReceiveBtc}
+          onBackButtonPress={() => {
+            this.hideModalReceiveBtc();
+          }}
+          onBackdropPress={() => {
+            this.hideModalReceiveBtc();
+          }}
+          onSwipeComplete={() => {
+            this.hideModalReceiveBtc();
+          }}
+          animationInTiming={1000}
+          animationOutTiming={1000}
+          animationIn="slideInUp"
+          animationOut="slideOutDown"
+          backdropOpacity={0}
+        >
+          <View style={styles.modalContainerReceive}>
+            <Text style={styles.modalTitleReceive}>RECIBIR BTC</Text>
+            <View style={styles.modalHeaderReceive}>
+              <Text style={styles.saldoDisponible}>Saldo disponible</Text>
+              <Text style={styles.cardText}>{balanceBtc} BTC</Text>
+            </View>
+            <View style={styles.qrContainer}>
+              <Image
+                source={require("../../assets/qr.png")}
+                style={{ width: 300, height: 300 }}
+              />
+            </View>
+            <View style={styles.addressContainer}>
+              <Text style={styles.addressTitle}>Mi dirección BTC</Text>
+              <View style={styles.addressRow}>
+                <Text style={styles.addressText}>
+                  1F1tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX
+                </Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    this.copyToClipboard("1F1tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX")
+                  }
+                >
+                  <Icon
+                    name="md-copy"
+                    type="Ionicons"
+                    style={[styles.icon, { color: "#fff", marginLeft: 15 }]}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          style={styles.modal}
+          swipeDirection="down"
+          isVisible={this.state.modalConfirm}
+          onBackButtonPress={() => {}}
+          onBackdropPress={() => {}}
+          onSwipeComplete={() => {}}
+          animationInTiming={1000}
+          animationOutTiming={1000}
+          animationIn="slideInUp"
+          animationOut="slideOutDown"
+          backdropOpacity={0}
+        >
+          <View style={styles.modalConfirm}>
+            <Text style={styles.titleConfirm}>¿Estás seguro?</Text>
+            <Text style={styles.subtitleConfirm}>
+              Estás a punto de enviar {this.state.bitcoin} BTC a{" "}
+              {this.state.clipboard}.
+            </Text>
+            <View style={styles.confirmBtnContainer}>
+              <TouchableOpacity
+                style={styles.buttonCancel}
+                onPress={() => {
+                  this.hideModalConfirm();
+                }}
+              >
+                <Text style={styles.buttonCancelText}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.buttonConfirm}
+                onPress={() => {
+                  this.hideModalConfirm();
+                  this.aceptSend();
+                }}
+              >
+                <Text style={styles.buttonConfirmText}>Aceptar</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </Modal>
