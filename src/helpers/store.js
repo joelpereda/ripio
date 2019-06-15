@@ -1,9 +1,11 @@
 import { createStore, combineReducers, applyMiddleware } from "redux";
 import thunkMiddleware from "redux-thunk";
-import price from "../reducers/index";
+import { price } from "../reducers/price.reducer";
+import { wallet } from "../reducers/wallet.reducer";
 
 const rootReducer = combineReducers({
-  price
+  price,
+  wallet
 });
 
 const debug =

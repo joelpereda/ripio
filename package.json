@@ -26,7 +26,8 @@
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "remote-redux-devtools": "^0.5.16",
-    "rn-fetch-blob": "^0.10.15"
+    "rn-fetch-blob": "^0.10.15",
+    "rn-placeholder": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",

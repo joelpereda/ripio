@@ -17,7 +17,7 @@ class Styles extends Component {
 
   render() {
     let { price } = this.props;
-    console.log("darkmode :", price.price.darkMode);
+    console.log("darkmode :", price.darkMode);
 
     return (
       <View>
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     height: 200,
     paddingHorizontal: 10,
-    paddingTop: 20,
+    paddingTop: 20
   },
   avatarContainer: {
     flex: 1,
@@ -124,12 +124,12 @@ const styles = StyleSheet.create({
   },
   drawerName: {
     fontSize: 18,
-    fontFamily: 'ProductSans-Bold',
+    fontFamily: "ProductSans-Bold",
     color: "#000"
   },
   drawerEmail: {
     fontSize: 16,
-    fontFamily: 'ProductSans-Regular',
+    fontFamily: "ProductSans-Regular",
     color: "#000"
   },
   firstList: {
@@ -189,9 +189,9 @@ const styles = StyleSheet.create({
     fontSize: 18
   },
   cardTitle: {
-    fontFamily: "ProductSans-Light",
+    fontFamily: "ProductSans-Thin",
     color: "#000",
-    fontSize: 17
+    fontSize: 16
   },
   cardSubtitle: {
     fontFamily: "ProductSans-Thin",
@@ -224,9 +224,9 @@ const styles = StyleSheet.create({
     flexDirection: "row"
   },
   variationText: {
-    fontFamily: "ProductSans-Bold",
+    fontFamily: "ProductSans-Light",
     marginRight: 15,
-    fontSize: 17,
+    fontSize: 16,
     color: "#000"
   },
   variationRed: {
@@ -387,6 +387,55 @@ const styles = StyleSheet.create({
     borderColor: "rgba(0, 0, 0, 0.1)",
     justifyContent: "space-evenly",
     alignItems: "center"
+  },
+  modalLoading: {
+    backgroundColor: "#fff",
+    paddingTop: 25,
+    height: "55%",
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    borderColor: "rgba(0, 0, 0, 0.1)",
+    justifyContent: "space-evenly",
+    alignItems: "center"
+  },
+  modalLoad: {
+    justifyContent: 'center'
+  },
+  modalOk: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+    paddingVertical: 20,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    borderColor: "rgba(0, 0, 0, 0.1)",
+    shadowColor: "grey",
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 5,
+    shadowOffset: { heigth: 5, width: 0 }
+  },
+  modalOkHeader: {
+    marginRight: 15,
+    alignSelf: "flex-end"
+  },
+  modalOkContainer: {
+    backgroundColor: "white",
+    alignItems: "center"
+  },
+  modalOkTitle: {
+    fontFamily: "ProductSans-Bold",
+    fontSize: 28,
+    color: "#000",
+    textAlign: "center",
+    paddingHorizontal: 40
+  },
+  modalOkBalances: {
+    fontFamily: "ProductSans-Bold",
+    fontSize: 28,
+    color: "#000",
+    textAlign: "left",
+    paddingHorizontal: 40
   },
   qrContainer: {
     alignItems: "center",

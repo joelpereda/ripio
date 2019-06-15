@@ -1,5 +1,5 @@
 import { priceConstants } from "../constants/price.constants";
-import { ServerCall } from "../helpers/service.call";
+import { ServerCallPrices } from "../helpers/service.call";
 
 export const userActions = {
   getPrices
@@ -16,7 +16,7 @@ export function loading(data) {
 
 export function getPrices() {
   return dispatch => {
-    return ServerCall().then(
+    return ServerCallPrices().then(
       data => {
         return dispatch(success(data));
       },

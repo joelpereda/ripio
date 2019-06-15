@@ -6,7 +6,8 @@ import {
   Dimensions,
   Linking,
   Image,
-  Clipboard
+  Clipboard,
+  RefreshControl
 } from "react-native";
 import {
   Icon,
@@ -16,12 +17,14 @@ import {
   Toast,
   Form,
   Item,
-  Input
+  Input,
+  Spinner
 } from "native-base";
 import { styles } from "../styles/styles";
 import { stylesDark } from "../styles/stylesDark";
 import { connect } from "react-redux";
 import { getPrices, loading } from "../actions/price.actions";
+import { getWallet, sendBtc } from "../actions/wallet.actions";
 import { withNavigation } from "react-navigation";
 import { LineChart } from "react-native-chart-kit";
 import TabOverview from "../components/tabOverview";
@@ -31,6 +34,8 @@ import Modal from "react-native-modal";
 import coinAddressValidator from "coin-address-validator";
 import { ScrollView } from "react-native-gesture-handler";
 import { Styles } from "../styles/styles";
+import Placeholder, { Line, Media } from "rn-placeholder";
+
 class HomeScreen extends Component {
   constructor(props) {
     super(props);
@@ -40,18 +45,28 @@ class HomeScreen extends Component {
       modalSendBtc: false,
       modalReceiveBtc: false,
       modalConfirm: false,
+      modalLoading: false,
+      modalOk: false,
+      loadingSend: false,
       activity: true,
       chart: false,
+      refreshing: false,
       bitcoin: Number(0),
       btcBuy: "-",
       btcSell: "-",
       variation: "-",
-      clipboard: ""
+      clipboard: "",
+      wallet: {}
     };
   }
 
   componentDidMount() {
     this.props.onLoadPrices(true);
+    this._getPrices();
+    this._getWallet();
+  }
+
+  _getPrices() {
     this.props.getPrices().then(prices => {
       console.log("prices :", prices);
       this.setState({
@@ -61,6 +76,35 @@ class HomeScreen extends Component {
       });
     });
   }
+
+  _getWallet() {
+    this.props.getWallet().then(wallet => {
+      console.log("wallet _getWallet:", wallet);
+      this.setState({
+        wallet: wallet.data
+      });
+    });
+  }
+
+  _onRefresh = () => {
+    this.setState({ refreshing: true });
+    this.props.getPrices().then(prices => {
+      console.log("prices :", prices);
+      this.setState({
+        btcBuy: prices.data.rates.ARS_BUY,
+        btcSell: prices.data.rates.ARS_SELL,
+        variation: prices.data.variation.ARS.toString(),
+        refreshing: false
+      });
+    });
+    this.props.getWallet().then(wallet => {
+      console.log("wallet _getWallet:", wallet);
+      this.setState({
+        wallet: wallet.data,
+        refreshing: false
+      });
+    });
+  };
 
   showModalCard() {
     this.setState({
@@ -83,6 +127,8 @@ class HomeScreen extends Component {
 
   hideModalSendBtc() {
     this.setState({
+      clipboard: "",
+      bitcoin: "",
       modalSendBtc: false
     });
   }
@@ -142,8 +188,58 @@ class HomeScreen extends Component {
     }
   }
 
-  aceptSend() {
-    console.log("asdasdsadasdas");
+  aceptSend(address, monto) {
+    console.log("id :", address);
+    console.log("monto :", monto);
+    this.props
+      .sendBtc(address, monto)
+      .then(() => {
+        this.loadingSend(true);
+        this.showModalOk();
+        setTimeout(() => {
+          this.props.getWallet().then(wallet => {
+            this.setState({
+              wallet: wallet.data,
+              refreshing: false
+            });
+          });
+          this.hideModalSendBtc();
+          this.loadingSend(false);
+        }, 2500);
+      })
+      .catch(err => {
+        console.log("err :", err);
+      });
+  }
+
+  showModalLoading() {
+    this.setState({
+      modalLoading: true
+    });
+  }
+
+  loadingSend(value) {
+    this.setState({
+      loadingSend: value
+    });
+  }
+
+  hideModalLoading() {
+    this.setState({
+      modalLoading: false
+    });
+  }
+
+  showModalOk() {
+    this.setState({
+      modalOk: true
+    });
+  }
+
+  hideModalOk() {
+    this.setState({
+      modalOk: false
+    });
   }
 
   handleActivityModal() {
@@ -188,14 +284,15 @@ class HomeScreen extends Component {
   }
 
   render() {
-    let { price } = this.props;
+    let { price, wallet } = this.props;
+    console.log("wallet :", wallet);
     let btcSell = this.state.btcSell;
     let btcBuy = this.state.btcBuy;
     let variation = this.state.variation.substr(0, 6);
-    let balanceArs = 38510.77;
-    let balanceBtc = balanceArs / btcSell;
+    let balanceBtc = wallet.isLoading ? 0 : wallet.data[0].balance;
+    let balanceArs = balanceBtc * btcSell;
     balanceBtc = balanceBtc.toString().substr(0, 14);
-    let darkMode = price.price.darkMode;
+    let darkMode = price.darkMode;
     return (
       <View style={darkMode ? stylesDark.container : styles.container}>
         <Styles />
@@ -205,7 +302,11 @@ class HomeScreen extends Component {
           >
             {/* <Text style={styles.title}>ripio.</Text> */}
             <Image
-              source={darkMode ?  require("../../assets/ripio-white.png") : require("../../assets/ripio-dark.png")}
+              source={
+                darkMode
+                  ? require("../../assets/ripio-white.png")
+                  : require("../../assets/ripio-dark.png")
+              }
               style={{ width: 50, height: 50 }}
               resizeMode="contain"
             />
@@ -231,15 +332,22 @@ class HomeScreen extends Component {
               darkMode ? stylesDark.balanceTextValue : styles.balanceTextValue
             }
           >
-            AR$ {balanceArs}
+            AR$ {balanceArs ? balanceArs : 0}
           </Text>
           <Text
             style={darkMode ? stylesDark.balanceBtcText : styles.balanceBtcText}
           >
-            BTC {balanceBtc}
+            BTC {balanceBtc ? balanceBtc : 0}
           </Text>
         </View>
-        <ScrollView>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh}
+            />
+          }
+        >
           <Tabs
             style={styles.tabContainer}
             tabBarPosition="top"
@@ -292,8 +400,8 @@ class HomeScreen extends Component {
                 }
                 iconType="Ionicons"
                 cardText="Card text"
-                btcBuy={price.price.isLoading ? "-" : `${btcBuy}`}
-                btcSell={price.price.isLoading ? "-" : `${btcSell}`}
+                btcBuy={price.isLoading ? "-" : `${btcBuy}`}
+                btcSell={price.isLoading ? "-" : `${btcSell}`}
               />
             </Tab>
             <Tab
@@ -406,7 +514,7 @@ class HomeScreen extends Component {
               ) : (
                 <View style={styles.chartViewModal}>
                   <Text style={styles.subtitleChart}>
-                    1 BTC = {price.price.isLoading ? "-" : `${btcSell} ARS`}
+                    1 BTC = {price.isLoading ? "-" : `${btcSell} ARS`}
                   </Text>
                   <LineChart
                     data={{
@@ -634,12 +742,101 @@ class HomeScreen extends Component {
                 style={styles.buttonConfirm}
                 onPress={() => {
                   this.hideModalConfirm();
-                  this.aceptSend();
+                  this.aceptSend(
+                    "5d05323b035a093b24cc1c1c",
+                    this.state.bitcoin
+                  );
                 }}
               >
                 <Text style={styles.buttonConfirmText}>Aceptar</Text>
               </TouchableOpacity>
             </View>
+          </View>
+        </Modal>
+        {/* <Modal
+          style={styles.modalLoad}
+          swipeDirection="down"
+          isVisible={this.state.modalLoading}
+          onBackButtonPress={() => {}}
+          onBackdropPress={() => {}}
+          onSwipeComplete={() => {}}
+          animationInTiming={1000}
+          animationOutTiming={1000}
+          animationIn="fadeIn"
+          animationOut="fadeOut"
+          backdropOpacity={0}
+        >
+          <View style={styles.modalLoading}>
+            <Spinner />
+          </View>
+        </Modal> */}
+        <Modal
+          style={styles.modal}
+          swipeDirection="down"
+          isVisible={this.state.modalOk}
+          onBackButtonPress={() => {
+            this.hideModalOk();
+          }}
+          onBackdropPress={() => {
+            this.hideModalOk();
+          }}
+          onSwipeComplete={() => {
+            this.hideModalOk();
+          }}
+          animationInTiming={500}
+          animationOutTiming={500}
+          backdropOpacity={0}
+        >
+          <View style={styles.modalOk}>
+            {/* <View style={styles.modalOkHeader}>
+              <TouchableOpacity onPress={() => this.hideModalOk()}>
+                <Icon
+                  name="md-close"
+                  type="Ionicons"
+                  style={{ color: "#000" }}
+                />
+              </TouchableOpacity>
+            </View> */}
+            {this.state.loadingSend ? 
+            <View style={{ height: 300 ,width: '90%', alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginTop: 20}}>
+              <Placeholder
+                isReady={!this.state.loadingSend}
+                animation="fade"
+              >
+                <Line width="70%" />
+                <Line />
+                <Line />
+                <Line width="30%" />
+                <Line />
+                <Line />
+                <Line width="70%" />
+                <Line />
+                <Line width="30%" />
+                <Line width="50%" />
+              </Placeholder>
+              </View>
+             : 
+              <View style={styles.modalOkContainer}>
+                <Text style={styles.modalOkTitle}>
+                  ¡Transferencia realizada con éxito!
+                </Text>
+                <Image
+                  source={require("../../assets/checked.png")}
+                  style={{
+                    width: 100,
+                    height: 100,
+                    marginTop: 30,
+                    marginBottom: 30
+                  }}
+                  resizeMode="center"
+                />
+                <Text style={styles.modalOkBalances}>
+                  Tu nuevo balance {"\n"}
+                  BTC {balanceBtc} {"\n"}
+                  AR$ {balanceArs}
+                </Text>
+              </View>
+            }
           </View>
         </Modal>
       </View>
@@ -648,16 +845,19 @@ class HomeScreen extends Component {
 }
 
 function mapStateToProps(state) {
-  const { price } = state;
+  const { price, wallet } = state;
   return {
-    price
+    price,
+    wallet
   };
 }
 
 const mapDispachToProps = dispatch => {
   return {
     onLoadPrices: data => dispatch(loading(data)),
-    getPrices: data => dispatch(getPrices(data))
+    getPrices: data => dispatch(getPrices(data)),
+    getWallet: data => dispatch(getWallet(data)),
+    sendBtc: (address, monto) => dispatch(sendBtc(address, monto))
   };
 };
 
