@@ -2,6 +2,7 @@ import { priceConstants } from "../constants/price.constants";
 
 const initialState = {
   isLoading: true,
+  darkMode: false,
   error: false,
   errorMessage: "",
   data: {}
@@ -18,7 +19,6 @@ export function price(state = initialState, action) {
         isLoading: true
       };
     case priceConstants.SUCCESS:
-      console.log("action.data :", action.data);
       return {
         ...state,
         isLoading: false,
@@ -34,7 +34,12 @@ export function price(state = initialState, action) {
         errorMessage: action.error,
         data: {}
       };
-
+    case priceConstants.CHANGE_STYLES:
+      console.log('action.data :', action.data);
+      return {
+        ...state,
+        darkMode: action.data
+      };
     default:
       return state;
   }

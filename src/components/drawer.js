@@ -1,67 +1,188 @@
 import React, { Component } from "react";
-import { Image, Text, View, ImageBackground, FlatList } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import {
+  Image,
+  Text,
+  View,
+  ImageBackground,
+  TouchableOpacity,
+  ScrollView,
+  Switch,
+  Linking
+} from "react-native";
 import { Icon } from "native-base";
-import { styles } from "./styles";
+import { styles as Styles } from "./styles";
+import { styles } from "../styles/styles";
+import { stylesDark } from "../styles/stylesDark";
+import { connect } from "react-redux";
+import { withNavigation } from "react-navigation";
+import { changeStyles } from "../actions/price.actions";
 
 class Drawer extends Component {
-  firstList = [
-    { title: "Billetera", id: "001" },
-    { title: "Recibir cripto", id: "002" },
-    { title: "Enviar", id: "003" },
-    { title: "Promociones", id: "004" }
-  ];
+  constructor(props) {
+    super(props);
+    this.state = {
+      darkMode: false
+    };
+  }
 
-  _keyExtractor = (item, index) => item.id;
+  handleDarkMode(value) {
+    this.setState({
+      darkMode: !this.state.darkMode
+    });
+    console.log("value :", value);
+    this.props.loadStyles(value);
+  }
 
   render() {
     return (
-      <View style={styles.preContainer}>
-        <ScrollView style={styles.container}>
-          <View style={styles.header}>
-            <ImageBackground
-              source={require("../../assets/texture.jpg")}
-              imageStyle={{
-                borderTopRightRadius: 12,
-                borderBottomLeftRadius: 12,
-                borderBottomRightRadius: 12
-              }}
-              style={{
-                width: "100%",
-                height: "100%"
-              }}
+      <View
+        style={
+          this.state.darkMode ? stylesDark.preContainer : styles.preContainer
+        }
+      >
+        <ScrollView
+          style={this.state.darkMode ? stylesDark.containerDrawer : styles.containerDrawer}
+        >
+          <View style={this.state.darkMode ? stylesDark.header : styles.header}>
+            <View
+              style={
+                this.state.darkMode
+                  ? stylesDark.avatarContainer
+                  : styles.avatarContainer
+              }
             >
-              <View style={styles.avatarContainer}>
-                <Image
-                  style={{ width: 65, height: 65 }}
-                  source={require("../../assets/avatar.png")}
-                />
-              </View>
-              <View style={styles.textHeaderContainer}>
-                <Text style={styles.drawerName}>Mauro Joel Pereda</Text>
-                <Text style={styles.drawerEmail}>
-                  Maurojoelpereda@gmail.com
-                </Text>
-              </View>
-            </ImageBackground>
+              <Image
+                style={{ width: 65, height: 65 }}
+                source={require("../../assets/man.png")}
+              />
+            </View>
+            <View
+              style={
+                this.state.darkMode
+                  ? stylesDark.textHeaderContainer
+                  : styles.textHeaderContainer
+              }
+            >
+              <Text
+                style={
+                  this.state.darkMode
+                    ? stylesDark.drawerName
+                    : styles.drawerName
+                }
+              >
+                Joel Pereda
+              </Text>
+              <Text
+                style={
+                  this.state.darkMode
+                    ? stylesDark.drawerEmail
+                    : styles.drawerEmail
+                }
+              >
+                maurojoelpereda@gmail.com
+              </Text>
+            </View>
           </View>
-          <View style={styles.firstList}>
-            <FlatList
-              keyExtractor={this._keyExtractor}
-              renderItem={({ item, index }) => {
-                return (
-                  <View style={styles.listRow}>
-                    <Icon
-                      style={styles.rowIcon}
-                      name="ios-wallet"
-                      type="Ionicons"
-                    />
-                    <Text style={styles.rowText}>{item.title}</Text>
-                  </View>
-                );
-              }}
-              data={this.firstList}
-            />
+          <View
+            style={
+              this.state.darkMode
+                ? stylesDark.drawerButtons
+                : styles.drawerButtons
+            }
+          >
+            <Text
+              style={
+                this.state.darkMode
+                  ? stylesDark.drawerSubtitle
+                  : styles.drawerSubtitle
+              }
+            >
+              Ajustes
+            </Text>
+            <View style={styles.drawerRow}>
+              <Text
+                style={
+                  this.state.darkMode
+                    ? stylesDark.buttonDrawerSwitch
+                    : styles.buttonDrawerSwitch
+                }
+              >
+                Modo oscuro
+              </Text>
+              <Switch
+                value={this.state.darkMode}
+                onValueChange={value => this.handleDarkMode(value)}
+              />
+            </View>
+            <Text
+              style={
+                this.state.darkMode
+                  ? stylesDark.drawerSubtitle
+                  : styles.drawerSubtitle
+              }
+            >
+              Ripio wallet
+            </Text>
+
+            <TouchableOpacity
+              style={styles.drawerRow}
+              onPress={() => Linking.openURL("https://ripio.com/es/faq/")}
+            >
+              <Text
+                style={
+                  this.state.darkMode
+                    ? stylesDark.buttonDrawerText
+                    : styles.buttonDrawerText
+                }
+              >
+                FAQ
+              </Text>
+              <Icon
+                name="ios-arrow-forward"
+                type="Ionicons"
+                style={{ color: "#555", fontSize: 20 }}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.drawerRow}
+              onPress={() => Linking.openURL("https://ripio.com/es/nosotros/")}
+            >
+              <Text
+                style={
+                  this.state.darkMode
+                    ? stylesDark.buttonDrawerText
+                    : styles.buttonDrawerText
+                }
+              >
+                Sobre nosotros
+              </Text>
+              <Icon
+                name="ios-arrow-forward"
+                type="Ionicons"
+                style={{ color: "#555", fontSize: 20 }}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.drawerRow}
+              onPress={() => Linking.openURL("https://ripio.com/es/terminos/")}
+            >
+              <Text
+                style={
+                  this.state.darkMode
+                    ? stylesDark.buttonDrawerText
+                    : styles.buttonDrawerText
+                }
+              >
+                Terminos y condiciones
+              </Text>
+              <Icon
+                name="ios-arrow-forward"
+                type="Ionicons"
+                style={{ color: "#555", fontSize: 20 }}
+              />
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </View>
@@ -69,4 +190,23 @@ class Drawer extends Component {
   }
 }
 
-export default Drawer;
+function mapStateToProps(state) {
+  const { price } = state;
+  return {
+    price
+  };
+}
+
+const mapDispachToProps = dispatch => {
+  return {
+    loadStyles: data => dispatch(changeStyles(data))
+  };
+};
+
+const connectedDrawer = connect(
+  mapStateToProps,
+  mapDispachToProps
+)(withNavigation(Drawer));
+export { connectedDrawer as Drawer };
+
+// export default Drawer;

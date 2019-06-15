@@ -19,6 +19,7 @@ import {
   Input
 } from "native-base";
 import { styles } from "../styles/styles";
+import { stylesDark } from "../styles/stylesDark";
 import { connect } from "react-redux";
 import { getPrices, loading } from "../actions/price.actions";
 import { withNavigation } from "react-navigation";
@@ -29,10 +30,12 @@ import Footer from "../components/footer";
 import Modal from "react-native-modal";
 import coinAddressValidator from "coin-address-validator";
 import { ScrollView } from "react-native-gesture-handler";
+import { Styles } from "../styles/styles";
 class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      darkMode: false,
       isModalVisible: false,
       modalSendBtc: false,
       modalReceiveBtc: false,
@@ -192,15 +195,17 @@ class HomeScreen extends Component {
     let balanceArs = 38510.77;
     let balanceBtc = balanceArs / btcSell;
     balanceBtc = balanceBtc.toString().substr(0, 14);
+    let darkMode = price.price.darkMode;
     return (
-      <View style={styles.container}>
+      <View style={darkMode ? stylesDark.container : styles.container}>
+        <Styles />
         <View style={styles.rowContainer}>
           <TouchableOpacity
             onPress={() => Linking.openURL("https://ripio.com/es/")}
           >
             {/* <Text style={styles.title}>ripio.</Text> */}
             <Image
-              source={require("../../assets/ripio-dark.png")}
+              source={darkMode ?  require("../../assets/ripio-white.png") : require("../../assets/ripio-dark.png")}
               style={{ width: 50, height: 50 }}
               resizeMode="contain"
             />
@@ -214,9 +219,25 @@ class HomeScreen extends Component {
           </TouchableOpacity>
         </View>
         <View style={styles.balanceContainer}>
-          <Text style={styles.balanceTextTitle}>MI BALANCE</Text>
-          <Text style={styles.balanceTextValue}>AR$ {balanceArs}</Text>
-          <Text style={styles.balanceBtcText}>BTC {balanceBtc}</Text>
+          <Text
+            style={
+              darkMode ? stylesDark.balanceTextTitle : styles.balanceTextTitle
+            }
+          >
+            MI BALANCE
+          </Text>
+          <Text
+            style={
+              darkMode ? stylesDark.balanceTextValue : styles.balanceTextValue
+            }
+          >
+            AR$ {balanceArs}
+          </Text>
+          <Text
+            style={darkMode ? stylesDark.balanceBtcText : styles.balanceBtcText}
+          >
+            BTC {balanceBtc}
+          </Text>
         </View>
         <ScrollView>
           <Tabs
@@ -228,7 +249,7 @@ class HomeScreen extends Component {
           >
             <Tab
               activeTextStyle={{
-                color: "black",
+                color: darkMode ? "#000" : "#fff",
                 fontFamily: "ProductSans-Bold"
               }}
               activeTabStyle={{
@@ -243,12 +264,14 @@ class HomeScreen extends Component {
               }}
               textStyle={{ fontFamily: "ProductSans-Bold" }}
               heading={
-                <TabHeading style={{ backgroundColor: "white" }}>
+                <TabHeading
+                  style={{ backgroundColor: darkMode ? "#000" : "#fff" }}
+                >
                   <Text
                     style={{
                       fontFamily: "ProductSans-Bold",
                       fontSize: 17,
-                      color: "#000"
+                      color: darkMode ? "#fff" : "#000"
                     }}
                   >
                     Resumen
@@ -257,6 +280,7 @@ class HomeScreen extends Component {
               }
             >
               <TabOverview
+                style={{ backgroundColor: darkMode ? "#000" : "#fff" }}
                 variationText="Variación"
                 press={() => this.showModalCard()}
                 variation={`${variation}`}
@@ -274,16 +298,16 @@ class HomeScreen extends Component {
             </Tab>
             <Tab
               activeTextStyle={{
-                color: "black",
+                color: darkMode ? "#fff" : "#000",
                 fontFamily: "ProductSans-Bold"
               }}
               activeTabStyle={{
-                backgroundColor: "#fff",
+                backgroundColor: darkMode ? "#000" : "#fff",
                 shadowColor: "transparent",
                 shadowOpacity: 0
               }}
               tabStyle={{
-                backgroundColor: "#fff",
+                backgroundColor: darkMode ? "#000" : "#fff",
                 shadowColor: "transparent",
                 shadowOpacity: 0,
                 elevation: 0
@@ -292,12 +316,16 @@ class HomeScreen extends Component {
                 fontFamily: "ProductSans-Bold"
               }}
               heading={
-                <TabHeading style={{ backgroundColor: "white" }}>
+                <TabHeading
+                  style={{
+                    backgroundColor: darkMode ? "#000" : "#fff"
+                  }}
+                >
                   <Text
                     style={{
                       fontFamily: "ProductSans-Bold",
                       fontSize: 17,
-                      color: "#000"
+                      color: darkMode ? "#fff" : "#000"
                     }}
                   >
                     Actividad
@@ -310,6 +338,11 @@ class HomeScreen extends Component {
           </Tabs>
         </ScrollView>
         <Footer
+          iconStyle={{
+            textAlignVertical: "center",
+            fontSize: 35,
+            color: darkMode ? "#fff" : "#000"
+          }}
           pressReceive={() => this.showModalSendBtc()}
           pressSend={() => this.showModalReceiveBtc()}
         />

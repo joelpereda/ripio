@@ -17,7 +17,8 @@ class Footer extends Component {
           <Button
             iconName="ios-arrow-dropup"
             iconType="Ionicons"
-            buttonText="Enviar btc"
+            buttonText="Enviar"
+            iconStyle={this.props.iconStyle}
             buttonStyle={{
               fontSize: 17,
               fontFamily: "ProductSans-Regular",
@@ -29,7 +30,8 @@ class Footer extends Component {
           <Button
             iconName="ios-arrow-dropdown"
             iconType="Ionicons"
-            buttonText="Recibir btc"
+            buttonText="Recibir"
+            iconStyle={this.props.iconStyle}
             buttonStyle={{
               fontSize: 17,
               fontFamily: "ProductSans-Regular",

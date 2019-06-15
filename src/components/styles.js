@@ -16,7 +16,9 @@ const styles = StyleSheet.create({
   header: {
     flex: 1,
     justifyContent: "space-between",
-    height: 200
+    height: 200,
+    paddingHorizontal: 10,
+    paddingTop: 20,
   },
   avatarContainer: {
     flex: 1,
@@ -28,13 +30,14 @@ const styles = StyleSheet.create({
     margin: 10
   },
   drawerName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#fff"
+    fontSize: 18,
+    fontFamily: 'ProductSans-Bold',
+    color: "#000"
   },
   drawerEmail: {
     fontSize: 16,
-    color: "#fff"
+    fontFamily: 'ProductSans-Regular',
+    color: "#000"
   },
   firstList: {
     flex: 1

@@ -1,56 +1,11 @@
-import React, { Component } from "react";
 import { StyleSheet, View, Text } from "react-native";
-import { changeStyles } from "../actions/price.actions";
-import { connect } from "react-redux";
-import { withNavigation } from "react-navigation";
-class Styles extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      darkMode: false
-    };
-  }
 
-  componentDidMount() {
-    this.props.loadStyles(false);
-  }
-
-  render() {
-    let { price } = this.props;
-    console.log("darkmode :", price.price.darkMode);
-
-    return (
-      <View>
-        <Text />
-      </View>
-    );
-  }
-}
-
-function mapStateToProps(state) {
-  const { price } = state;
-  return {
-    price
-  };
-}
-
-const mapDispachToProps = dispatch => {
-  return {
-    loadStyles: data => dispatch(changeStyles(data))
-  };
-};
-
-const connectedStyles = connect(
-  mapStateToProps,
-  mapDispachToProps
-)(withNavigation(Styles));
-export { connectedStyles as Styles };
-
-const styles = StyleSheet.create({
+const stylesDark = StyleSheet.create({
   //GENERAL STYLES
   container: {
     flex: 1,
-    paddingHorizontal: 15
+    paddingHorizontal: 15,
+    backgroundColor: '#000'
   },
   rowContainer: {
     flexDirection: "row",
@@ -68,7 +23,7 @@ const styles = StyleSheet.create({
 
   //DRAWER STYLES
   drawerButtons: {
-    backgroundColor: "#fff",
+    backgroundColor: "#000",
     paddingHorizontal: 20
   },
   drawerRow: {
@@ -79,30 +34,58 @@ const styles = StyleSheet.create({
     fontFamily: "ProductSans-Regular",
     fontSize: 17,
     marginBottom: 10,
-    color: "#000"
+    color: "#fff"
   },
   buttonDrawerText: {
     fontFamily: "ProductSans-Regular",
     fontSize: 17,
     marginBottom: 10,
-    color: "#000"
+    color: "#fff"
   },
   drawerSubtitle: {
     fontFamily: "ProductSans-Bold",
     fontSize: 17,
     marginTop: 25,
     marginBottom: 10,
-    color: "#000"
+    color: "#fff"
+  },
+
+  //HOME STYLES
+  balanceContainer: {
+    flex: 0.2,
+    alignSelf: "center",
+    paddingVertical: 15
+  },
+  balanceTextTitle: {
+    fontFamily: "ProductSans-Medium",
+    fontSize: 16,
+    textAlign: "center",
+    color: "#fff"
+  },
+  balanceTextValue: {
+    fontFamily: "ProductSans-Black",
+    fontSize: 22,
+    textAlign: "center",
+    color: "#fff"
+  },
+  balanceBtcText: {
+    fontFamily: "ProductSans-Light",
+    fontSize: 14,
+    textAlign: "center",
+    color: "#fff"
+  },
+  tabContainer: {
+    height: "75%"
   },
   preContainer: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#000",
     borderBottomRightRadius: 12,
     borderTopRightRadius: 12
   },
   containerDrawer: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#000",
     borderBottomRightRadius: 12,
     borderTopRightRadius: 12
   },
@@ -111,7 +94,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     height: 200,
     paddingHorizontal: 10,
-    paddingTop: 20,
+    paddingTop: 20
   },
   avatarContainer: {
     flex: 1,
@@ -124,13 +107,13 @@ const styles = StyleSheet.create({
   },
   drawerName: {
     fontSize: 18,
-    fontFamily: 'ProductSans-Bold',
-    color: "#000"
+    fontFamily: "ProductSans-Bold",
+    color: "#fff"
   },
   drawerEmail: {
     fontSize: 16,
-    fontFamily: 'ProductSans-Regular',
-    color: "#000"
+    fontFamily: "ProductSans-Regular",
+    color: "#fff"
   },
   firstList: {
     flex: 1
@@ -145,38 +128,9 @@ const styles = StyleSheet.create({
   },
   rowText: {
     fontSize: 16,
-    color: "#000",
+    color: "#fff",
     marginLeft: 15
   },
-
-  //HOME STYLES
-  balanceContainer: {
-    flex: 0.2,
-    alignSelf: "center",
-    paddingVertical: 15
-  },
-  balanceTextTitle: {
-    fontFamily: "ProductSans-Medium",
-    fontSize: 16,
-    textAlign: "center",
-    color: "#000"
-  },
-  balanceTextValue: {
-    fontFamily: "ProductSans-Black",
-    fontSize: 22,
-    textAlign: "center",
-    color: "#000"
-  },
-  balanceBtcText: {
-    fontFamily: "ProductSans-Light",
-    fontSize: 14,
-    textAlign: "center",
-    color: "#000"
-  },
-  tabContainer: {
-    height: "75%"
-  },
-
   //CARDS
   card: {
     width: "98%",
@@ -185,22 +139,22 @@ const styles = StyleSheet.create({
   },
   cardTitleBtc: {
     fontFamily: "ProductSans-Regular",
-    color: "#000",
+    color: "#fff",
     fontSize: 18
   },
   cardTitle: {
     fontFamily: "ProductSans-Light",
-    color: "#000",
+    color: "#fff",
     fontSize: 17
   },
   cardSubtitle: {
     fontFamily: "ProductSans-Thin",
-    color: "#000",
+    color: "#fff",
     fontSize: 13
   },
   cardPriceBuy: {
     fontFamily: "ProductSans-Medium",
-    color: "#000",
+    color: "#fff",
     fontSize: 17
   },
   cardPriceSell: {
@@ -210,7 +164,7 @@ const styles = StyleSheet.create({
   },
   cardPrice: {
     fontFamily: "ProductSans-Regular",
-    color: "#000",
+    color: "#fff",
     fontSize: 17
   },
   cardText: {
@@ -227,7 +181,7 @@ const styles = StyleSheet.create({
     fontFamily: "ProductSans-Bold",
     marginRight: 15,
     fontSize: 17,
-    color: "#000"
+    color: "#fff"
   },
   variationRed: {
     backgroundColor: "#a01616",
@@ -324,7 +278,7 @@ const styles = StyleSheet.create({
   },
   modalActivityTitle: {
     fontFamily: "ProductSans-Bold",
-    color: "#000",
+    color: "#fff",
     fontSize: 18,
     paddingHorizontal: 25,
     paddingTop: 25,
@@ -340,7 +294,7 @@ const styles = StyleSheet.create({
   },
   modalChartTitle: {
     fontFamily: "ProductSans-Bold",
-    color: "#000",
+    color: "#fff",
     fontSize: 18,
     paddingHorizontal: 25,
     paddingTop: 25,
@@ -381,7 +335,7 @@ const styles = StyleSheet.create({
   modalConfirm: {
     paddingTop: 25,
     height: "55%",
-    backgroundColor: "#fff",
+    backgroundColor: "#000",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     borderColor: "rgba(0, 0, 0, 0.1)",
@@ -440,7 +394,7 @@ const styles = StyleSheet.create({
   },
   inputCard: {
     width: "90%",
-    backgroundColor: "#fff",
+    backgroundColor: "#000",
     borderRadius: 15,
     alignSelf: "center",
     marginTop: 40,
@@ -475,7 +429,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 15,
-    backgroundColor: "#fff",
+    backgroundColor: "#000",
     borderRadius: 12,
     borderWidth: 2,
     borderColor: "#419bbf",
@@ -513,14 +467,14 @@ const styles = StyleSheet.create({
     fontFamily: "ProductSans-Black",
     fontSize: 26,
     textAlign: "center",
-    color: "#000",
+    color: "#fff",
     marginBottom: 15
   },
   subtitleConfirm: {
     fontFamily: "ProductSans-Light",
     fontSize: 18,
     textAlign: "center",
-    color: "#000"
+    color: "#fff"
   },
   confirmBtnContainer: {
     flexDirection: "row",
@@ -529,14 +483,14 @@ const styles = StyleSheet.create({
   },
   //activityViewModal
   activityViewModal: {
-    backgroundColor: "#fff",
+    backgroundColor: "#000",
     justifyContent: "center",
     alignItems: "center",
     flex: 1
   },
   activityViewModalText: {
     fontFamily: "ProductSans-Regular",
-    color: "#000",
+    color: "#fff",
     fontSize: 18
   },
   chartViewModal: {
@@ -552,4 +506,4 @@ const styles = StyleSheet.create({
     paddingVertical: 10
   }
 });
-export { styles };
+export { stylesDark };

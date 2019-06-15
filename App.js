@@ -12,7 +12,7 @@ import {
   createDrawerNavigator
 } from "react-navigation";
 import { Root } from "native-base";
-import Drawer from "./src/components/drawer";
+import { Drawer } from "./src/components/drawer";
 import { HomeScreen } from "./src/screens/homeScreen";
 import { Provider } from "react-redux";
 import { store } from "./src/helpers/store";

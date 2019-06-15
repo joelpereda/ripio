@@ -5,6 +5,11 @@ export const userActions = {
   getPrices
 };
 
+export function changeStyles(data) {
+  console.log("data :", data);
+  return { type: priceConstants.CHANGE_STYLES, data };
+}
+
 export function loading(data) {
   return { type: priceConstants.REQUEST, payload: { isLoading: data } };
 }
@@ -13,7 +18,6 @@ export function getPrices() {
   return dispatch => {
     return ServerCall().then(
       data => {
-        console.log("data :", data);
         return dispatch(success(data));
       },
       error => {

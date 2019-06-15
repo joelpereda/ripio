@@ -10,7 +10,7 @@ class Button extends Component {
         <Icon
           name={this.props.iconName}
           type={this.props.iconType}
-          style={{ textAlignVertical: "center", fontSize: 35 }}
+          style={this.props.iconStyle}
         />
         <Text style={this.props.buttonStyle}>{this.props.buttonText}</Text>
       </View>

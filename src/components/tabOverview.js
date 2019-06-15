@@ -10,8 +10,10 @@ class TabOverview extends Component {
   render() {
     const { press } = this.props;
     return (
-      <View style={{ flex: 1 }}>
-        <Text style={[styles.title, { marginTop: 10 }]}>Criptomonedas</Text>
+      <View style={this.props.style}>
+        <Text style={[styles.title, { marginVertical: 10 }]}>
+          Criptomonedas
+        </Text>
         <TouchableWithoutFeedback onPress={() => this.press(press)}>
           <Card style={styles.card}>
             <CardItem
