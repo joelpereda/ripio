@@ -51,7 +51,8 @@ class HomeScreen extends Component {
       activity: true,
       chart: false,
       refreshing: false,
-      bitcoin: Number(0),
+      bitcoin: 0,
+      montoArs: 0,
       btcBuy: "-",
       btcSell: "-",
       variation: "-",
@@ -68,7 +69,6 @@ class HomeScreen extends Component {
 
   _getPrices() {
     this.props.getPrices().then(prices => {
-      console.log("prices :", prices);
       this.setState({
         btcBuy: prices.data.rates.ARS_BUY,
         btcSell: prices.data.rates.ARS_SELL,
@@ -79,7 +79,6 @@ class HomeScreen extends Component {
 
   _getWallet() {
     this.props.getWallet().then(wallet => {
-      console.log("wallet _getWallet:", wallet);
       this.setState({
         wallet: wallet.data
       });
@@ -89,7 +88,6 @@ class HomeScreen extends Component {
   _onRefresh = () => {
     this.setState({ refreshing: true });
     this.props.getPrices().then(prices => {
-      console.log("prices :", prices);
       this.setState({
         btcBuy: prices.data.rates.ARS_BUY,
         btcSell: prices.data.rates.ARS_SELL,
@@ -98,7 +96,6 @@ class HomeScreen extends Component {
       });
     });
     this.props.getWallet().then(wallet => {
-      console.log("wallet _getWallet:", wallet);
       this.setState({
         wallet: wallet.data,
         refreshing: false
@@ -110,7 +107,6 @@ class HomeScreen extends Component {
     this.setState({
       isModalVisible: true
     });
-    console.log("asdsad");
   }
 
   hideModalCard() {
@@ -158,17 +154,38 @@ class HomeScreen extends Component {
   }
 
   sendBitcoin() {
+    let btcSell = this.state.btcSell;
+    let { wallet } = this.props;
+    let balanceBtc = wallet.isLoading ? 0 : wallet.data[0].balance;
+    let fee = 0.0002;
+    let bitcoin = this.state.bitcoin;
+    console.log("this.state.bitcoin :", this.state.bitcoin);
+    let bitcoinBudget = parseFloat(bitcoin) + parseFloat(fee);
+    console.log("bitcoinBudget :", bitcoinBudget);
+    this.setState({ montoArs: bitcoinBudget * btcSell });
     const isBtcAddress = coinAddressValidator.validate(
       this.state.clipboard,
       "btc",
       "prod"
     );
-    if (isBtcAddress) {
-      if (this.state.clipboard != "" && this.state.bitcoin != 0) {
-        this.showModalConfirm();
+    let montoValidado = this.state.bitcoin <= balanceBtc;
+    if (montoValidado) {
+      if (isBtcAddress) {
+        if (this.state.clipboard != "" && this.state.bitcoin != 0) {
+          this.showModalConfirm();
+        } else {
+          Toast.show({
+            text: "Debe completar ambos campos para continuar.",
+            buttonText: "X",
+            position: "top",
+            type: "danger",
+            textStyle: { fontFamily: "ProductSans-Regular" },
+            duration: 3000
+          });
+        }
       } else {
         Toast.show({
-          text: "Debe completar ambos campos para continuar.",
+          text: "Introduzca una dirección correcta.",
           buttonText: "X",
           position: "top",
           type: "danger",
@@ -178,19 +195,20 @@ class HomeScreen extends Component {
       }
     } else {
       Toast.show({
-        text: "Introduzca una dirección correcta.",
+        text: "El monto no puede superar a tu balance actual.",
         buttonText: "X",
         position: "top",
         type: "danger",
         textStyle: { fontFamily: "ProductSans-Regular" },
-        duration: 3000
+        duration: 5000
       });
     }
   }
 
-  aceptSend(address, monto) {
-    console.log("id :", address);
-    console.log("monto :", monto);
+  aceptSend(address, budget) {
+    let { wallet } = this.props;
+    let balanceBtc = wallet.isLoading ? 0 : wallet.data[0].balance;
+    let monto = balanceBtc - budget;
     this.props
       .sendBtc(address, monto)
       .then(() => {
@@ -285,7 +303,6 @@ class HomeScreen extends Component {
 
   render() {
     let { price, wallet } = this.props;
-    console.log("wallet :", wallet);
     let btcSell = this.state.btcSell;
     let btcBuy = this.state.btcBuy;
     let variation = this.state.variation.substr(0, 6);
@@ -645,6 +662,7 @@ class HomeScreen extends Component {
                   Pegar dirección desde el portapapeles
                 </Text>
               </TouchableOpacity>
+              <Text style={styles.feeText}>Fee 0.0002</Text>
             </View>
             <TouchableOpacity
               style={styles.buttonSend}
@@ -725,10 +743,23 @@ class HomeScreen extends Component {
         >
           <View style={styles.modalConfirm}>
             <Text style={styles.titleConfirm}>¿Estás seguro?</Text>
-            <Text style={styles.subtitleConfirm}>
-              Estás a punto de enviar {this.state.bitcoin} BTC a{" "}
-              {this.state.clipboard}.
-            </Text>
+            <View>
+              <Text style={styles.subtitleConfirm}>
+                Estás a punto de enviar: {"\n"}
+              </Text>
+              <Text style={styles.subtitleConfirmNum}>
+                {this.state.bitcoin} BTC {"\n"}
+                ARS {this.state.montoArs}
+                {"\n"}
+              </Text>
+              <Text style={styles.subtitleConfirm}>
+                Address: {"\n"}
+                {this.state.clipboard}
+              </Text>
+              <View style={styles.feeContainer}>
+                <Text style={styles.feeText}>Fee: 0.0002 BTC</Text>
+              </View>
+            </View>
             <View style={styles.confirmBtnContainer}>
               <TouchableOpacity
                 style={styles.buttonCancel}
@@ -797,25 +828,32 @@ class HomeScreen extends Component {
                 />
               </TouchableOpacity>
             </View> */}
-            {this.state.loadingSend ? 
-            <View style={{ height: 300 ,width: '90%', alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginTop: 20}}>
-              <Placeholder
-                isReady={!this.state.loadingSend}
-                animation="fade"
+            {this.state.loadingSend ? (
+              <View
+                style={{
+                  height: 300,
+                  width: "90%",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  alignSelf: "center",
+                  marginTop: 20
+                }}
               >
-                <Line width="70%" />
-                <Line />
-                <Line />
-                <Line width="30%" />
-                <Line />
-                <Line />
-                <Line width="70%" />
-                <Line />
-                <Line width="30%" />
-                <Line width="50%" />
-              </Placeholder>
+                {/* <Placeholder isReady={!this.state.loadingSend} animation="fade">
+                  <Line width="70%" />
+                  <Line />
+                  <Line />
+                  <Line width="30%" />
+                  <Line />
+                  <Line />
+                  <Line width="70%" />
+                  <Line />
+                  <Line width="30%" />
+                  <Line width="50%" />
+                </Placeholder> */}
+                <Spinner />
               </View>
-             : 
+            ) : (
               <View style={styles.modalOkContainer}>
                 <Text style={styles.modalOkTitle}>
                   ¡Transferencia realizada con éxito!
@@ -836,7 +874,7 @@ class HomeScreen extends Component {
                   AR$ {balanceArs}
                 </Text>
               </View>
-            }
+            )}
           </View>
         </Modal>
       </View>

@@ -380,13 +380,18 @@ const styles = StyleSheet.create({
   },
   modalConfirm: {
     paddingTop: 25,
-    height: "55%",
+    height: "65%",
     backgroundColor: "#fff",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     borderColor: "rgba(0, 0, 0, 0.1)",
     justifyContent: "space-evenly",
-    alignItems: "center"
+    alignItems: "center",
+    shadowColor: "black",
+    shadowOpacity: 0.8,
+    shadowRadius: 5,
+    elevation: 5,
+    shadowOffset: { heigth: 10, width: 0 }
   },
   modalLoading: {
     backgroundColor: "#fff",
@@ -399,7 +404,7 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   modalLoad: {
-    justifyContent: 'center'
+    justifyContent: "center"
   },
   modalOk: {
     alignItems: "center",
@@ -435,7 +440,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: "#000",
     textAlign: "left",
-    paddingHorizontal: 40
+    paddingHorizontal: 30
   },
   qrContainer: {
     alignItems: "center",
@@ -502,6 +507,14 @@ const styles = StyleSheet.create({
     textAlign: "left",
     marginLeft: 20
   },
+  feeText: {
+    fontFamily: "ProductSans-Regular",
+    fontSize: 13,
+    color: "#333",
+    textAlign: "right",
+    marginRight: 20,
+    marginTop: 5
+  },
   saldoDisponible: {
     fontFamily: "ProductSans-Bold",
     fontSize: 17,
@@ -566,15 +579,27 @@ const styles = StyleSheet.create({
     marginBottom: 15
   },
   subtitleConfirm: {
-    fontFamily: "ProductSans-Light",
-    fontSize: 18,
-    textAlign: "center",
+    fontFamily: "ProductSans-Regular",
+    fontSize: 20,
+    textAlign: "left",
+    color: "#000"
+  },
+  subtitleConfirmNum: {
+    fontFamily: "ProductSans-Medium",
+    fontSize: 19,
+    textAlign: "left",
     color: "#000"
   },
   confirmBtnContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center"
+  },
+  feeContainer: {
+    justifyContent: "center",
+    alignItems: "flex-end",
+    alignSelf: 'flex-start',
+    marginTop: 10
   },
   //activityViewModal
   activityViewModal: {
