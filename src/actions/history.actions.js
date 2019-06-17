@@ -25,12 +25,9 @@ export function getHistory() {
   }
 }
 
-export function postHistory(fecha, monto, fee) {
-  console.log('fecha :', fecha);
-  console.log('monto :', monto);
-  console.log('fee :', fee);
+export function postHistory(address, fecha, monto, fee) {
   return dispatch => {
-    return serverCallPost(fecha, monto, fee).then(
+    return serverCallPost(address, fecha, monto, fee).then(
       data => {
         return dispatch(success(data));
       },

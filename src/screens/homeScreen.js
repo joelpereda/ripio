@@ -243,7 +243,7 @@ class HomeScreen extends Component {
       .then(() => {
         this.loadingSend(true);
         this.showModalOk();
-        this.props.postHistory(fecha, budget, fee);
+        this.props.postHistory(address, fecha, budget, fee);
         setTimeout(() => {
           this.props.getWallet().then(wallet => {
             this.setState({
@@ -447,6 +447,7 @@ class HomeScreen extends Component {
             }
           >
             <ScrollView
+              style={{ backgroundColor: darkMode ? "#000" : "#fff" }}
               refreshControl={
                 <RefreshControl
                   refreshing={this.state.refreshing}
@@ -510,6 +511,7 @@ class HomeScreen extends Component {
             }
           >
             <TabActivity
+              style={{ backgroundColor: darkMode ? "#000" : "#fff" }}
               onRefresh={this._onRefresh}
               refreshing={this.state.refreshing}
               renderItem={this._renderItem}
@@ -970,8 +972,8 @@ const mapDispachToProps = dispatch => {
     getPrices: data => dispatch(getPrices(data)),
     getWallet: data => dispatch(getWallet(data)),
     getHistory: data => dispatch(getHistory(data)),
-    postHistory: (fecha, monto, fee) =>
-      dispatch(postHistory(fecha, monto, fee)),
+    postHistory: (address, fecha, monto, fee) =>
+      dispatch(postHistory(address, fecha, monto, fee)),
     sendBtc: (address, monto) => dispatch(sendBtc(address, monto))
   };
 };

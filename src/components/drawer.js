@@ -41,7 +41,11 @@ class Drawer extends Component {
         }
       >
         <ScrollView
-          style={this.state.darkMode ? stylesDark.containerDrawer : styles.containerDrawer}
+          style={
+            this.state.darkMode
+              ? stylesDark.containerDrawer
+              : styles.containerDrawer
+          }
         >
           <View style={this.state.darkMode ? stylesDark.header : styles.header}>
             <View
@@ -110,6 +114,9 @@ class Drawer extends Component {
                 Modo oscuro
               </Text>
               <Switch
+                
+                thumbColor="#0187d0"
+                trackColor="#0187d0"
                 value={this.state.darkMode}
                 onValueChange={value => this.handleDarkMode(value)}
               />

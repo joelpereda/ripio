@@ -23,7 +23,7 @@ const stylesDark = StyleSheet.create({
 
   //DRAWER STYLES
   drawerButtons: {
-    backgroundColor: "#000",
+    backgroundColor: "#222",
     paddingHorizontal: 20
   },
   drawerRow: {
@@ -79,15 +79,15 @@ const stylesDark = StyleSheet.create({
   },
   preContainer: {
     flex: 1,
-    backgroundColor: "#000",
-    borderBottomRightRadius: 12,
-    borderTopRightRadius: 12
+    backgroundColor: "#222",
+    borderBottomRightRadius: 25,
+    borderTopRightRadius: 25
   },
   containerDrawer: {
     flex: 1,
-    backgroundColor: "#000",
-    borderBottomRightRadius: 12,
-    borderTopRightRadius: 12
+    backgroundColor: "#222",
+    borderBottomRightRadius: 25,
+    borderTopRightRadius: 25
   },
   header: {
     flex: 1,

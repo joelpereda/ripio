@@ -7,7 +7,13 @@ import Footer from "../components/footer";
 class TabActivity extends Component {
   render() {
     return (
-      <View style={[styles.container, { paddingTop: 10, paddingBottom: 75 }]}>
+      <View
+        style={[
+          styles.container,
+          this.props.style,
+          { paddingTop: 10, paddingBottom: 75 }
+        ]}
+      >
         <Text style={[styles.title, { marginBottom: 5, textAlign: "center" }]}>
           Movimientos
         </Text>

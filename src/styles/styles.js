@@ -97,14 +97,14 @@ const styles = StyleSheet.create({
   preContainer: {
     flex: 1,
     backgroundColor: "white",
-    borderBottomRightRadius: 12,
-    borderTopRightRadius: 12
+    borderBottomRightRadius: 25,
+    borderTopRightRadius: 25
   },
   containerDrawer: {
     flex: 1,
     backgroundColor: "white",
-    borderBottomRightRadius: 12,
-    borderTopRightRadius: 12
+    borderBottomRightRadius: 25,
+    borderTopRightRadius: 25
   },
   header: {
     flex: 1,

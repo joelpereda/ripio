@@ -78,6 +78,7 @@ export function ServerCallHistory() {
 }
 
 export function serverCallPost(address, fecha, monto, fee) {
+  console.log("address :", address);
   console.log("fecha :", fecha);
   console.log("fee :", fee);
   console.log("monto :", monto);
