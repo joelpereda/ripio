@@ -183,10 +183,19 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignSelf: "center"
   },
+  cardHistory: {
+    borderRadius: 12,
+    justifyContent: "space-between"
+  },
   cardTitleBtc: {
     fontFamily: "ProductSans-Regular",
     color: "#000",
     fontSize: 18
+  },
+  cardTitleAddress: {
+    fontFamily: "ProductSans-Light",
+    color: "#000",
+    fontSize: 14
   },
   cardTitle: {
     fontFamily: "ProductSans-Thin",
@@ -276,7 +285,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     paddingTop: 25,
-    height: "80%",
+    height: "75%",
     backgroundColor: "#0187d0",
     justifyContent: "center",
     alignItems: "center",
@@ -358,7 +367,7 @@ const styles = StyleSheet.create({
   //MODAL RECEIVE
   modalContainerReceive: {
     paddingTop: 25,
-    height: "80%",
+    height: "75%",
     backgroundColor: "#0187d0",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
@@ -462,7 +471,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 15
   },
-  addressRow: { flexDirection: "row", alignItems: "center" },
+  addressRow: { flexDirection: "row", alignItems: 'center', marginTop: 5 },
 
   //MODAL SEND
   modalContainerSend: {
@@ -598,7 +607,7 @@ const styles = StyleSheet.create({
   feeContainer: {
     justifyContent: "center",
     alignItems: "flex-end",
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     marginTop: 10
   },
   //activityViewModal
@@ -623,7 +632,8 @@ const styles = StyleSheet.create({
     fontFamily: "ProductSans-Medium",
     fontSize: 16,
     textAlign: "center",
-    paddingVertical: 10
+    paddingVertical: 10,
+    color: "#000"
   }
 });
 export { styles };

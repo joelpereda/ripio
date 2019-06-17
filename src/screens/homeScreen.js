@@ -25,6 +25,7 @@ import { stylesDark } from "../styles/stylesDark";
 import { connect } from "react-redux";
 import { getPrices, loading } from "../actions/price.actions";
 import { getWallet, sendBtc } from "../actions/wallet.actions";
+import { getHistory, postHistory } from "../actions/history.actions";
 import { withNavigation } from "react-navigation";
 import { LineChart } from "react-native-chart-kit";
 import TabOverview from "../components/tabOverview";
@@ -32,9 +33,11 @@ import TabActivity from "../components/tabActivity";
 import Footer from "../components/footer";
 import Modal from "react-native-modal";
 import coinAddressValidator from "coin-address-validator";
-import { ScrollView } from "react-native-gesture-handler";
+import { ScrollView, FlatList } from "react-native-gesture-handler";
 import { Styles } from "../styles/styles";
 import Placeholder, { Line, Media } from "rn-placeholder";
+import HistoryCard from "../components/historyCard";
+import moment from "moment";
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -57,7 +60,10 @@ class HomeScreen extends Component {
       btcSell: "-",
       variation: "-",
       clipboard: "",
-      wallet: {}
+      wallet: {},
+      history: [],
+      currentDate: new Date(),
+      markedDate: moment(new Date()).format("DD/MM/YYYY HH:MM")
     };
   }
 
@@ -65,6 +71,7 @@ class HomeScreen extends Component {
     this.props.onLoadPrices(true);
     this._getPrices();
     this._getWallet();
+    this._getHistory();
   }
 
   _getPrices() {
@@ -84,7 +91,14 @@ class HomeScreen extends Component {
       });
     });
   }
-
+  _getHistory() {
+    this.props.getHistory().then(history => {
+      console.log("history :", history);
+      this.setState({
+        history: history.data
+      });
+    });
+  }
   _onRefresh = () => {
     this.setState({ refreshing: true });
     this.props.getPrices().then(prices => {
@@ -98,6 +112,12 @@ class HomeScreen extends Component {
     this.props.getWallet().then(wallet => {
       this.setState({
         wallet: wallet.data,
+        refreshing: false
+      });
+    });
+    this.props.getHistory().then(history => {
+      this.setState({
+        history: history.data,
         refreshing: false
       });
     });
@@ -206,6 +226,15 @@ class HomeScreen extends Component {
   }
 
   aceptSend(address, budget) {
+    /* const today = this.state.currentDate;
+    const day = moment(today).format("dddd");
+    const date = moment(today).format("DD/MM/YYYY");
+    const time = moment(today).format("HH:MM"); */
+    const date = moment(new Date()).format("YYYY-MM-DD hh:mm:ss");
+    let fecha = date;
+    console.log("fecha :", fecha);
+    debugger;
+    let fee = 0.0002;
     let { wallet } = this.props;
     let balanceBtc = wallet.isLoading ? 0 : wallet.data[0].balance;
     let monto = balanceBtc - budget;
@@ -214,6 +243,7 @@ class HomeScreen extends Component {
       .then(() => {
         this.loadingSend(true);
         this.showModalOk();
+        this.props.postHistory(fecha, budget, fee);
         setTimeout(() => {
           this.props.getWallet().then(wallet => {
             this.setState({
@@ -223,6 +253,7 @@ class HomeScreen extends Component {
           });
           this.hideModalSendBtc();
           this.loadingSend(false);
+          this._onRefresh();
         }, 2500);
       })
       .catch(err => {
@@ -301,7 +332,25 @@ class HomeScreen extends Component {
     });
   }
 
+  _onPressItemCard = () => {
+    console.log("object");
+  };
+  //FLAT LIST BITCOIN HISTORY CARD
+  _renderItem = ({ item }) => (
+    <HistoryCard
+      id={item.id}
+      address={item.address}
+      date={item.date}
+      monto={item.monto}
+      fee={item.fee}
+      press={this._onPressItemCard}
+    />
+  );
+
   render() {
+    const today = this.state.currentDate;
+    const day = moment(today).format("dddd");
+    const date = moment(today).format("MMMM D, YYYY");
     let { price, wallet } = this.props;
     let btcSell = this.state.btcSell;
     let btcBuy = this.state.btcBuy;
@@ -357,51 +406,52 @@ class HomeScreen extends Component {
             BTC {balanceBtc ? balanceBtc : 0}
           </Text>
         </View>
-        <ScrollView
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh}
-            />
-          }
+
+        <Tabs
+          style={styles.tabContainer}
+          tabBarPosition="top"
+          tabBarUnderlineStyle={{
+            backgroundColor: "#0187d0"
+          }}
         >
-          <Tabs
-            style={styles.tabContainer}
-            tabBarPosition="top"
-            tabBarUnderlineStyle={{
-              backgroundColor: "#0187d0"
+          <Tab
+            activeTextStyle={{
+              color: darkMode ? "#000" : "#fff",
+              fontFamily: "ProductSans-Bold"
             }}
-          >
-            <Tab
-              activeTextStyle={{
-                color: darkMode ? "#000" : "#fff",
-                fontFamily: "ProductSans-Bold"
-              }}
-              activeTabStyle={{
-                backgroundColor: "transparent",
-                shadowColor: "transparent",
-                shadowOpacity: 0
-              }}
-              tabStyle={{
-                backgroundColor: "transparent",
-                shadowColor: "transparent",
-                shadowOpacity: 0
-              }}
-              textStyle={{ fontFamily: "ProductSans-Bold" }}
-              heading={
-                <TabHeading
-                  style={{ backgroundColor: darkMode ? "#000" : "#fff" }}
+            activeTabStyle={{
+              backgroundColor: "transparent",
+              shadowColor: "transparent",
+              shadowOpacity: 0
+            }}
+            tabStyle={{
+              backgroundColor: "transparent",
+              shadowColor: "transparent",
+              shadowOpacity: 0
+            }}
+            textStyle={{ fontFamily: "ProductSans-Bold" }}
+            heading={
+              <TabHeading
+                style={{ backgroundColor: darkMode ? "#000" : "#fff" }}
+              >
+                <Text
+                  style={{
+                    fontFamily: "ProductSans-Bold",
+                    fontSize: 17,
+                    color: darkMode ? "#fff" : "#000"
+                  }}
                 >
-                  <Text
-                    style={{
-                      fontFamily: "ProductSans-Bold",
-                      fontSize: 17,
-                      color: darkMode ? "#fff" : "#000"
-                    }}
-                  >
-                    Resumen
-                  </Text>
-                </TabHeading>
+                  Resumen
+                </Text>
+              </TabHeading>
+            }
+          >
+            <ScrollView
+              refreshControl={
+                <RefreshControl
+                  refreshing={this.state.refreshing}
+                  onRefresh={this._onRefresh}
+                />
               }
             >
               <TabOverview
@@ -420,48 +470,53 @@ class HomeScreen extends Component {
                 btcBuy={price.isLoading ? "-" : `${btcBuy}`}
                 btcSell={price.isLoading ? "-" : `${btcSell}`}
               />
-            </Tab>
-            <Tab
-              activeTextStyle={{
-                color: darkMode ? "#fff" : "#000",
-                fontFamily: "ProductSans-Bold"
-              }}
-              activeTabStyle={{
-                backgroundColor: darkMode ? "#000" : "#fff",
-                shadowColor: "transparent",
-                shadowOpacity: 0
-              }}
-              tabStyle={{
-                backgroundColor: darkMode ? "#000" : "#fff",
-                shadowColor: "transparent",
-                shadowOpacity: 0,
-                elevation: 0
-              }}
-              textStyle={{
-                fontFamily: "ProductSans-Bold"
-              }}
-              heading={
-                <TabHeading
+            </ScrollView>
+          </Tab>
+          <Tab
+            activeTextStyle={{
+              color: darkMode ? "#fff" : "#000",
+              fontFamily: "ProductSans-Bold"
+            }}
+            activeTabStyle={{
+              backgroundColor: darkMode ? "#000" : "#fff",
+              shadowColor: "transparent",
+              shadowOpacity: 0
+            }}
+            tabStyle={{
+              backgroundColor: darkMode ? "#000" : "#fff",
+              shadowColor: "transparent",
+              shadowOpacity: 0,
+              elevation: 0
+            }}
+            textStyle={{
+              fontFamily: "ProductSans-Bold"
+            }}
+            heading={
+              <TabHeading
+                style={{
+                  backgroundColor: darkMode ? "#000" : "#fff"
+                }}
+              >
+                <Text
                   style={{
-                    backgroundColor: darkMode ? "#000" : "#fff"
+                    fontFamily: "ProductSans-Bold",
+                    fontSize: 17,
+                    color: darkMode ? "#fff" : "#000"
                   }}
                 >
-                  <Text
-                    style={{
-                      fontFamily: "ProductSans-Bold",
-                      fontSize: 17,
-                      color: darkMode ? "#fff" : "#000"
-                    }}
-                  >
-                    Actividad
-                  </Text>
-                </TabHeading>
-              }
-            >
-              <TabActivity />
-            </Tab>
-          </Tabs>
-        </ScrollView>
+                  Actividad
+                </Text>
+              </TabHeading>
+            }
+          >
+            <TabActivity
+              onRefresh={this._onRefresh}
+              refreshing={this.state.refreshing}
+              renderItem={this._renderItem}
+              data={this.state.history}
+            />
+          </Tab>
+        </Tabs>
         <Footer
           iconStyle={{
             textAlignVertical: "center",
@@ -524,12 +579,36 @@ class HomeScreen extends Component {
               </View>
               {this.state.activity ? (
                 <View style={styles.activityViewModal}>
-                  <Text style={styles.activityViewModalText}>
-                    No hay operaciones realizadas :(
-                  </Text>
+                  {this.state.history !== [] ? (
+                    <View style={[styles.container, { paddingVertical: 20 }]}>
+                      <Text
+                        style={[
+                          styles.title,
+                          { marginBottom: 20, textAlign: "center" }
+                        ]}
+                      >
+                        Lista de movimientos
+                      </Text>
+                      <FlatList
+                        data={this.state.history}
+                        renderItem={this._renderItem}
+                        refreshControl={
+                          <RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this._onRefresh}
+                          />
+                        }
+                      />
+                    </View>
+                  ) : (
+                    <Text style={styles.activityViewModalText}>
+                      No hay operaciones realizadas :(
+                    </Text>
+                  )}
                 </View>
               ) : (
                 <View style={styles.chartViewModal}>
+                  <Text style={styles.title}>Grafico informativo bitcoin</Text>
                   <Text style={styles.subtitleChart}>
                     1 BTC = {price.isLoading ? "-" : `${btcSell} ARS`}
                   </Text>
@@ -556,7 +635,7 @@ class HomeScreen extends Component {
                         }
                       ]
                     }}
-                    width={Dimensions.get("window").width}
+                    width={Dimensions.get("window").width + 1}
                     height={300}
                     yAxisLabel={"$"}
                     chartConfig={{
@@ -564,15 +643,9 @@ class HomeScreen extends Component {
                       backgroundGradientFrom: "#ff9951",
                       backgroundGradientTo: "#ff6a00",
                       decimalPlaces: 0,
-                      color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                      style: {
-                        borderRadius: 20
-                      }
+                      color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`
                     }}
                     bezier
-                    style={{
-                      borderRadius: 20
-                    }}
                   />
                 </View>
               )}
@@ -710,14 +783,15 @@ class HomeScreen extends Component {
             <View style={styles.addressContainer}>
               <Text style={styles.addressTitle}>Mi dirección BTC</Text>
               <View style={styles.addressRow}>
-                <Text style={styles.addressText}>
-                  1F1tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX
-                </Text>
                 <TouchableOpacity
+                  style={styles.addressRow}
                   onPress={() =>
                     this.copyToClipboard("1F1tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX")
                   }
                 >
+                  <Text style={styles.addressText}>
+                    1F1tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX
+                  </Text>
                   <Icon
                     name="md-copy"
                     type="Ionicons"
@@ -895,6 +969,9 @@ const mapDispachToProps = dispatch => {
     onLoadPrices: data => dispatch(loading(data)),
     getPrices: data => dispatch(getPrices(data)),
     getWallet: data => dispatch(getWallet(data)),
+    getHistory: data => dispatch(getHistory(data)),
+    postHistory: (fecha, monto, fee) =>
+      dispatch(postHistory(fecha, monto, fee)),
     sendBtc: (address, monto) => dispatch(sendBtc(address, monto))
   };
 };

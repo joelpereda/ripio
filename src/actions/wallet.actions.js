@@ -1,5 +1,5 @@
 import { walletConstants } from "../constants/wallet.constants";
-import { ServerCallWallet, serverCallPost } from "../helpers/service.call";
+import { ServerCallWallet, serverCallPut } from "../helpers/service.call";
 
 export const userActions = {
   getWallet,
@@ -31,10 +31,8 @@ export function getWallet() {
 }
 
 export function sendBtc(address, monto) {
-  console.log("id :", address);
-  console.log("monto :", monto);
   return dispatch => {
-    return serverCallPost(address, monto).then(
+    return serverCallPut(address, monto).then(
       data => {
         return dispatch(success(data));
       },
